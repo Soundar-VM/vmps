@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+
+.price{
+    font-size: 12px;
+    
+}
+.strike{
+    position: relative;
+    opacity: 0.3;
+    margin-left: 10px;
+}
+.strike::after{
+    content: "";
+    width: 100%;
+    height: 1px;
+    background-color: white;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    rotate: -10deg;
+
+}
