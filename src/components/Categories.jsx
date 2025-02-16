@@ -28,20 +28,22 @@ function Categories({setValue,selectCategory}) {
     <div className=" flex justify-between">
 
  
-    <Select.Root defaultValue="Choose Categories" onValueChange={(value) => selectCategory(value)}>
-      <Select.Trigger/>
-      <Select.Content>
-        <Select.Group>
-                {
-                  categories.map((category,index)=>{
-                    return(
-                          <Select.Item value={category.id} key={index}>{category.title}</Select.Item>
-                        )
-                    })
-                }
-        </Select.Group>
-      </Select.Content>
-    </Select.Root>
+    <Select.Root 
+  defaultValue="200"  // Show "All" by default
+  onValueChange={(value) => selectCategory(value)}
+>
+  <Select.Trigger />  {/* This will show "All" by default */}
+  <Select.Content>
+    <Select.Group>
+      <Select.Item value="200">All</Select.Item> 
+      {categories.map((category, index) => (
+        <Select.Item value={category.id.toString()} key={index}>
+          {category.title}
+        </Select.Item>
+      ))}
+    </Select.Group>
+  </Select.Content>
+</Select.Root>
 
 
 

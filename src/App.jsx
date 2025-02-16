@@ -12,7 +12,7 @@ function App() {
         accentColor="blue"
         radius="rounded-none large"
         scaling="100%"
-        appearance=""
+        appearance="dark"
       >
         <Navbar />
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
