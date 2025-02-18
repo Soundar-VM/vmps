@@ -4,7 +4,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { IoSearch } from "react-icons/io5";
 import { Button,TextField,Box,Flex,Select } from "@radix-ui/themes";
 
-function Categories({setValue,selectCategory}) {
+function Categories({setValue,selectCategory,searchValue}) {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -25,17 +25,17 @@ function Categories({setValue,selectCategory}) {
 
   return (
     <>
-    <div className=" flex justify-between">
+    <div className=" flex justify-between" style={{position:"sticky",top:'100px'}}>
 
  
     <Select.Root 
-  defaultValue="200"  // Show "All" by default
+  defaultValue="all"  // Show "All" by default
   onValueChange={(value) => selectCategory(value)}
 >
   <Select.Trigger />  {/* This will show "All" by default */}
   <Select.Content>
     <Select.Group>
-      <Select.Item value="200">All</Select.Item> 
+      <Select.Item value="all">All</Select.Item> 
       {categories.map((category, index) => (
         <Select.Item value={category.id.toString()} key={index}>
           {category.title}
@@ -48,7 +48,7 @@ function Categories({setValue,selectCategory}) {
 
 
     <Box className="search" maxWidth="200px">
-                <TextField.Root placeholder="Search the docs…" size="2" onChange={(e)=>setValue(e.target.value)}>
+                <TextField.Root placeholder="Search the docs…" size="2" value={searchValue} onChange={(e)=>setValue(e.target.value)}>
                     <TextField.Slot>
                         <IoSearch size="14"/>  
                     </TextField.Slot>

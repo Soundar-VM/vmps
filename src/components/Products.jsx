@@ -5,47 +5,47 @@ import Categories from "./Categories";
 import { CiBoxList } from "react-icons/ci";
 import { CiGrid41 } from "react-icons/ci";
 
-function Products() {
+function Products({range,selectedValues}) {
   const [products, setProducts] = useState([]);
-  const [total, setTotal] = useState();
-  const [setList, list] = useState();
+  // const [total, setTotal] = useState();
+  // const [setList, list] = useState();
   const [searchValue, setSearchValue] = useState('');
   const [category, setCategory] = useState();
-  const [page, setPage] = useState(1);
+  // const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [avail, setNomore] = useState(false);
-  const [buttons,showButtons]=useState([]);
-  const [cart,addCart]=useState([]);
+  // const [avail, setNomore] = useState(false);
+  // const [buttons,showButtons]=useState([]);
+  // const [cart,addCart]=useState([]);
 
 
-// useEffect(()=>{
-  
-// },[])
 
-  useEffect(() => {
-    getUser();
-  }, [searchValue]);
 
+
+
+
+
+  // useEffect(() => {
+  //   setProducts(overallFilter(range, selectedValues));
+  // }, [range, selectedValues]);
 
 
 
   // fetch 
-  async function getUser() {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `https://myhitech.digitalmantraaz.com/api/allproducts`
-      );
-        // setTotal(response.data);
+  useEffect(() => {
+    async function getUser() {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          "https://myhitech.digitalmantraaz.com/api/allproducts"
+        );
         setProducts(response.data);
-        console.log(response.data);
-        
-      
-    } catch (error) {
-      console.error(error);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+      setLoading(false);
     }
-    setLoading(false);
-  }
+    getUser();
+  }, []);
   // fetch 
 
 
@@ -55,15 +55,44 @@ function Products() {
   // setting Value 
   function setValue(val){
     setSearchValue(val);
-    console.log(val);
+    setCategory('');
+    console.log(searchValue,category);
   }
   // setting Value 
-
-
-
-  // filtering 
-  const filteredProducts = products.filter((prod) => prod.title.toLowerCase().includes(searchValue.toLowerCase()));
   
+  
+  function setCategoryFilter(val){
+    setCategory(val);
+    setSearchValue('');
+    console.log(category,searchValue);
+  }
+
+
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = searchValue
+      ? product.title.toLowerCase().includes(searchValue.toLowerCase())
+      : true;
+  
+    const matchesCategory = category
+      ? String(product.cat_id) === String(category)
+      : true;
+  
+    return matchesSearch && matchesCategory;
+  });
+  
+
+
+
+
+  function overallFilter(range, selectedValues) {
+    return products.filter(product => 
+      product.price < range && selectedValues.includes(product.condition)
+    );
+  }
+  
+  // function overallFilter(range,selectedValue){
+  //     return filteredProducts.filter(product => prod.price<range && prod.condition===searchValue);
+  // }
   
   // filtering 
 
@@ -73,22 +102,17 @@ function Products() {
   return (
     <>
 <Container className="relative min-h-screen">
-      <Categories setValue={setValue} selectCategory={setCategory}/>
-        <Tabs.Root defaultValue="documents" className="mb-2">
-          <Tabs.List color="cyan">
-            <Tabs.Trigger value="account"></Tabs.Trigger>
-            <Tabs.Trigger value="documents"></Tabs.Trigger>
-          </Tabs.List>
-        </Tabs.Root>
+      <Categories setValue={setValue} selectCategory={setCategoryFilter} searchValue={searchValue}/>
+        
 
-        <Tabs.Root defaultValue="documents">
+        <Tabs.Root defaultValue="list" className="my-5">
           <Tabs.List>
-            <Tabs.Trigger value="account"><CiBoxList className="me-2"/> List</Tabs.Trigger>
-            <Tabs.Trigger value="documents"><CiGrid41 className="me-2"/> Grid</Tabs.Trigger>
+            <Tabs.Trigger value="list"><CiBoxList className="me-2"/> List</Tabs.Trigger>
+            <Tabs.Trigger value="grid"><CiGrid41 className="me-2"/> Grid</Tabs.Trigger>
           </Tabs.List>
 
           <Box pt="3">
-            <Tabs.Content value="documents">
+            <Tabs.Content value="grid">
               
             <Grid
         columns={{ initial: "2", xs: "3", sm: "4", md: "5", lg: "7", xl: "8" }}
@@ -97,35 +121,36 @@ function Products() {
         {filteredProducts.map((product, index) => {
           return (
             <Card className="w-full" key={index}>
-              <Inset clip="padding-box" className=" pt-2 flex justify-center" side="top" pb="current">
+              <Box className="">
                 <img
                   src={`https://myhitech.digitalmantraaz.com/`+product.photo}
                   style={{
                     display: "block",
                     objectFit: "cover",
                     maxWidth: "150px",
-                    height: "150px"
+                    height: "150px",
+                    marginRight:'20px'
                   }}
                   />
-              </Inset>  
+              </Box>  
               <Text as="p" className="line-clamp-1" size={{initial:'1',xs:'2'}}>
                 <Strong>
                 {product.title}
 
                 </Strong>
               </Text>
-              <Flex>
+              <Flex className="mt-2">
                 <Text as="p" className="real price"> ₹{product.price}/- </Text>
-                <Text as="span" className="strike price">MRP ₹{Math.ceil(product.price-(product.price * 75/100))}/-</Text>
+                <Text as="span" className="strike price">MRP ₹{Math.ceil(product.price / 0.25)}/-</Text>
               </Flex>
               {
-                <div className="show flex justify-center mt-3" >
-                <Flex className="">
-                    <Button variant="soft" radius="full" color="red">-</Button>
-                    <TextField.Root className="rounded-none w-[40px] mx-2 border-none bg-gray-200 text-center p-1" defaultValue={1}>
+                <div className="w-full show justify-center flex mt-3" >
+                {/* <Flex className="">
+                    <Button variant="soft"  color="red">-</Button>
+                    <TextField.Root className="rounded-none w-[40px] mx-2 border-none bg-gray-200 center p-1" defaultValue={1}>
                     </TextField.Root>
-                    <Button variant="soft" radius="full" color="green">+</Button>
-                  </Flex>
+                    <Button variant="soft"  color="green">+</Button>
+                  </Flex> */}
               </div>   
               }
              <Button className="block w-full text-center" color="grass" style={{width:"100%",marginTop:"8px"}} variant="soft" onClick={() => addToCart(product.id)}>
@@ -138,8 +163,61 @@ function Products() {
       </Grid>
             </Tabs.Content>
 
-            <Tabs.Content value="account">
-            <table class="table" style={{width:'100%'}}>
+            <Tabs.Content value="list">
+            <Grid
+        columns={{ initial: "1", xs: "1", sm: "2", md: "3", lg: "3", xl: "4" }}
+        gap="3"
+        >
+            {filteredProducts.map((product, index) => {
+          return (
+            <Card className="w-full" key={index}>
+              <Flex justify="around">
+              <Inset clip="padding-box" className=" pt-2 flex justify-center" side="top" pb="current">
+                <img
+                  src={`https://myhitech.digitalmantraaz.com/`+product.photo}
+                  style={{
+                    display: "block",
+                    objectFit: "cover",
+                    maxWidth: "100px",
+                    height: "100px"
+                  }}
+                  />
+              </Inset>  
+              <Box>
+              <Text as="p" className="line-clamp-1" size={{initial:'1',xs:'2'}}>
+                <Strong>
+                {product.title}
+
+                </Strong>
+              </Text>
+              <Flex className="mt-2">
+                <Text as="p" className="real price"> ₹{product.price}/- </Text>
+                <Text as="span" className="strike price">MRP ₹{Math.ceil(product.price / 0.25)}/-</Text>
+              </Flex>
+              {
+                <div className="w-full show justify-center flex mt-3" >
+                {/* <Flex className="">
+                    <Button variant="soft"  color="red">-</Button>
+                    <TextField.Root className="rounded-none w-[40px] mx-2 border-none bg-gray-200 center p-1" defaultValue={1}>
+                    </TextField.Root>
+                    <Button variant="soft"  color="green">+</Button>
+                  </Flex> */}
+              </div>   
+              }
+             <Button className="block w-full text-center" color="grass" style={{width:"100%",marginTop:"8px"}} variant="soft" onClick={() => addToCart(product.id)}>
+              Add
+            </Button>
+              </Box>
+
+              </Flex>
+              
+
+            </Card>
+          );
+        })}
+        </Grid>
+
+            {/* <table class="table" style={{width:'100%'}}>
                 <thead>
                   <th>S.No</th>
                   <th>Product</th>
@@ -169,9 +247,14 @@ function Products() {
                         <td className="text-center border-1" data-label="Name">{product.title}</td>
                         <td className="text-center border-1" data-label="Price"> <span style={{textDecoration:"line-through",color:'#454545'}}>₹{Math.ceil(product.price-(product.price * 75/100))}/-</span> <span className="ms-2">₹{Math.ceil((product.price))}/-</span></td>
                         <td className="text-center border-1" data-label="Qnt">
-                        <Box maxWidth="60px">
-                          <TextField.Root size="2" defaultValue={1} />
-                        </Box>
+                        <div className="show flex justify-center mt-3" >
+                          <Flex className="">
+                              <Button variant="soft" color="red" className="px-1">-</Button>
+                              <TextField.Root className="rounded-none w-[40px] border-none bg-gray-200 text-center p-1" defaultValue={1}>
+                              </TextField.Root>
+                              <Button variant="soft" color="green" className="px-1">+</Button>
+                            </Flex>
+                        </div> 
                         </td>
                         <td className="text-center border-1" data-label="Name">{product.price}</td>
                         <td className="text-center border-1" data-label="addtocart">
@@ -182,7 +265,7 @@ function Products() {
                   })
                   }
                 </tbody>
-              </table>
+              </table> */}
             </Tabs.Content>
           </Box>
         </Tabs.Root>
@@ -202,6 +285,8 @@ function Products() {
               "No More Products"
             )}
           </Flex> */}
+
+
           
         </Container>
       
@@ -210,3 +295,4 @@ function Products() {
 }
 
 export default Products;
+
