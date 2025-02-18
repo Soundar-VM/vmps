@@ -121,19 +121,17 @@ function Products({range,selectedValues}) {
         {filteredProducts.map((product, index) => {
           return (
             <Card className="w-full" key={index}>
-              <Box className="">
+              <Inset className="p-2">
                 <img
                   src={`https://myhitech.digitalmantraaz.com/`+product.photo}
                   style={{
                     display: "block",
                     objectFit: "cover",
-                    maxWidth: "150px",
                     height: "150px",
-                    marginRight:'20px'
                   }}
                   />
-              </Box>  
-              <Text as="p" className="line-clamp-1" size={{initial:'1',xs:'2'}}>
+              </Inset>  
+              <Text as="p" style={{marginTop:"10px"}} className="line-clamp-1" size={{initial:'1',xs:'2'}}>
                 <Strong>
                 {product.title}
 
@@ -145,17 +143,17 @@ function Products({range,selectedValues}) {
               </Flex>
               {
                 <div className="w-full show justify-center flex mt-3" >
-                {/* <Flex className="">
+                <Flex className="">
                     <Button variant="soft"  color="red">-</Button>
                     <TextField.Root className="rounded-none w-[40px] mx-2 border-none bg-gray-200 center p-1" defaultValue={1}>
                     </TextField.Root>
                     <Button variant="soft"  color="green">+</Button>
-                  </Flex> */}
+                  </Flex>
               </div>   
               }
-             <Button className="block w-full text-center" color="grass" style={{width:"100%",marginTop:"8px"}} variant="soft" onClick={() => addToCart(product.id)}>
+             {/* <Button className="block w-full text-center" color="grass" style={{width:"100%",marginTop:"8px"}} variant="soft" onClick={() => addToCart(product.id)}>
               Add
-            </Button>
+            </Button> */}
 
             </Card>
           );
@@ -165,26 +163,26 @@ function Products({range,selectedValues}) {
 
             <Tabs.Content value="list">
             <Grid
-        columns={{ initial: "1", xs: "1", sm: "2", md: "3", lg: "3", xl: "4" }}
+        columns={{ initial: "1", xs: "2", sm: "2", md: "3", lg: "3", xl: "4" }}
         gap="3"
         >
             {filteredProducts.map((product, index) => {
           return (
-            <Card className="w-full" key={index}>
+            <Card className="relative" key={index}>
               <Flex justify="around">
-              <Inset clip="padding-box" className=" pt-2 flex justify-center" side="top" pb="current">
+              <Inset >
                 <img
                   src={`https://myhitech.digitalmantraaz.com/`+product.photo}
                   style={{
                     display: "block",
                     objectFit: "cover",
-                    maxWidth: "100px",
-                    height: "100px"
+                    width: "100px",
+                    height:"100px"
                   }}
                   />
               </Inset>  
-              <Box>
-              <Text as="p" className="line-clamp-1" size={{initial:'1',xs:'2'}}>
+              <Box className="ms-5">
+              <Text as="p" className="line-clamp-1" size={{initial:'1',xs:'2'}} style={{maxWidth:"160px"}}>
                 <Strong>
                 {product.title}
 
@@ -195,21 +193,24 @@ function Products({range,selectedValues}) {
                 <Text as="span" className="strike price">MRP ₹{Math.ceil(product.price / 0.25)}/-</Text>
               </Flex>
               {
-                <div className="w-full show justify-center flex mt-3" >
-                {/* <Flex className="">
-                    <Button variant="soft"  color="red">-</Button>
-                    <TextField.Root className="rounded-none w-[40px] mx-2 border-none bg-gray-200 center p-1" defaultValue={1}>
-                    </TextField.Root>
-                    <Button variant="soft"  color="green">+</Button>
-                  </Flex> */}
-              </div>   
+                  
               }
-             <Button className="block w-full text-center" color="grass" style={{width:"100%",marginTop:"8px"}} variant="soft" onClick={() => addToCart(product.id)}>
+             {/* <Button className="block w-full text-center" color="grass" style={{width:"100%",marginTop:"8px"}} variant="soft" onClick={() => addToCart(product.id)}>
               Add
-            </Button>
+            </Button> */}
+
               </Box>
 
+            <Text as="p" size="1" className="individual-price absolute top-0 right-0 p-1"> ₹{0}/- </Text>
               </Flex>
+              <div className="w-full show justify-end flex absolute bottom-0 right-0" >
+                <Flex className="">
+                    <Button variant="soft"  color="red">-</Button>
+                    <TextField.Root className="rounded-none w-[40px]" defaultValue={1} style={{border:"0"}}>
+                    </TextField.Root>
+                    <Button variant="soft"  color="green">+</Button>
+                  </Flex>
+              </div> 
               
 
             </Card>

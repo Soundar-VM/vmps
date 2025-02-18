@@ -25,7 +25,14 @@ function Categories({setValue,selectCategory,searchValue}) {
 
   return (
     <>
-    <div className=" flex justify-between" style={{position:"sticky",top:'100px'}}>
+     <Box className="search" width="100%" style={{position:"sticky",top:"10px",zIndex:"2"}}>
+                <TextField.Root placeholder="Search the docs…" size="2" value={searchValue} onChange={(e)=>setValue(e.target.value)}>
+                    <TextField.Slot>
+                        <IoSearch size="14"/>  
+                    </TextField.Slot>
+                </TextField.Root>
+            </Box>
+    <div className=" flex justify-between" style={{position:"sticky",top:'100px',marginTop:"10px",zIndex:"2"}}>
 
  
     <Select.Root 
@@ -47,13 +54,11 @@ function Categories({setValue,selectCategory,searchValue}) {
 
 
 
-    <Box className="search" maxWidth="200px">
-                <TextField.Root placeholder="Search the docs…" size="2" value={searchValue} onChange={(e)=>setValue(e.target.value)}>
-                    <TextField.Slot>
-                        <IoSearch size="14"/>  
-                    </TextField.Slot>
-                </TextField.Root>
-            </Box>
+<Button className="block" filter={filterOn}>Filter</Button>
+
+
+
+   
     </div>
     </>
   );

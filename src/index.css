@@ -22,3 +22,10 @@
     rotate: -10deg;
 
 }
+.individual-price{
+        background: red;
+        font-weight: 600;
+        border: 1px solid #ffe000;
+        border-right: 0;
+        border-top: 0;
+}
