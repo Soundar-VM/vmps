@@ -84,11 +84,11 @@ function Products({range,selectedValues}) {
 
 
 
-  function overallFilter(range, selectedValues) {
-    return products.filter(product => 
-      product.price < range && selectedValues.includes(product.condition)
-    );
-  }
+  // function overallFilter(range, selectedValues) {
+  //   return products.filter(product => 
+  //     product.price < range && selectedValues.includes(product.condition)
+  //   );
+  // }
   
   // function overallFilter(range,selectedValue){
   //     return filteredProducts.filter(product => prod.price<range && prod.condition===searchValue);
