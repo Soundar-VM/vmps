@@ -54,7 +54,7 @@ function Categories({setValue,selectCategory,searchValue}) {
 
 
 
-{/* <Button className="block" filter={filterOn}>Filter</Button> */}
+<Button className="block">Filter</Button>
 
 
 
