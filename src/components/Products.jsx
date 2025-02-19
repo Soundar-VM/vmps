@@ -115,7 +115,7 @@ function Products({range,selectedValues}) {
             <Tabs.Content value="grid">
               
             <Grid
-        columns={{ initial: "2", xs: "3", sm: "4", md: "5", lg: "7", xl: "8" }}
+        columns={{ initial: "2", xs: "2", sm: "3", md: "4", lg: "4", xl: "5" }}
         gap="3"
         >
         {filteredProducts.map((product, index) => {
