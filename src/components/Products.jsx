@@ -1,38 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {Container,Spinner,DropdownMenu,Box,Grid,Inset,Strong,Text,Card,Button,Flex,TextField,Tabs} from '@radix-ui/themes'
+import { Button, Flex, Text, Card, TextField, Tabs, Box, Grid } from "@radix-ui/themes";
 import Categories from "./Categories";
-import { CiBoxList } from "react-icons/ci";
-import { CiGrid41 } from "react-icons/ci";
+import { CiBoxList, CiGrid41 } from "react-icons/ci";
 
-function Products({range,selectedValues}) {
+function Products() {
   const [products, setProducts] = useState([]);
-  // const [total, setTotal] = useState();
-  // const [setList, list] = useState();
   const [searchValue, setSearchValue] = useState('');
-  const [category, setCategory] = useState();
-  // const [page, setPage] = useState(1);
+  const [category, setCategory] = useState('');
   const [loading, setLoading] = useState(false);
-  // const [avail, setNomore] = useState(false);
-  // const [buttons,showButtons]=useState([]);
-  // const [cart,addCart]=useState([]);
+  const [view, setView] = useState("grid"); // 'grid' or 'list'
 
-
-
-
-
-
-
-
-  // useEffect(() => {
-  //   setProducts(overallFilter(range, selectedValues));
-  // }, [range, selectedValues]);
-
-
-
-  // fetch 
+  // Fetch products
   useEffect(() => {
-    async function getUser() {
+    async function fetchProducts() {
       setLoading(true);
       try {
         const response = await axios.get(
@@ -44,256 +25,72 @@ function Products({range,selectedValues}) {
       }
       setLoading(false);
     }
-    getUser();
+    fetchProducts();
   }, []);
-  // fetch 
 
-
-
-
-
-  // setting Value 
-  function setValue(val){
-    setSearchValue(val);
-    setCategory('');
-    console.log(searchValue,category);
-  }
-  // setting Value 
-  
-  
-  function setCategoryFilter(val){
-    setCategory(val);
-    setSearchValue('');
-    console.log(category,searchValue);
-  }
-
-
+  // Filter products
   const filteredProducts = products.filter((product) => {
     const matchesSearch = searchValue
       ? product.title.toLowerCase().includes(searchValue.toLowerCase())
       : true;
-  
     const matchesCategory = category
       ? String(product.cat_id) === String(category)
       : true;
-  
     return matchesSearch && matchesCategory;
   });
-  
-
-
-
-
-  // function overallFilter(range, selectedValues) {
-  //   return products.filter(product => 
-  //     product.price < range && selectedValues.includes(product.condition)
-  //   );
-  // }
-  
-  // function overallFilter(range,selectedValue){
-  //     return filteredProducts.filter(product => prod.price<range && prod.condition===searchValue);
-  // }
-  
-  // filtering 
-
-  
-  
 
   return (
-    <>
-<Container className="relative min-h-screen">
-      <Categories setValue={setValue} selectCategory={setCategoryFilter} searchValue={searchValue}/>
-        
+    <Box className="relative min-h-screen">
+      <Categories setValue={setSearchValue} selectCategory={setCategory} searchValue={searchValue} />
 
-        <Tabs.Root defaultValue="list" className="my-5">
-          <Tabs.List>
-            <Tabs.Trigger value="list"><CiBoxList className="me-2"/> List</Tabs.Trigger>
-            <Tabs.Trigger value="grid"><CiGrid41 className="me-2"/> Grid</Tabs.Trigger>
-          </Tabs.List>
+      {/* Tabs for toggling view */}
+      <Tabs.Root defaultValue="grid" className="my-5">
+        <Tabs.List>
+          <Tabs.Trigger value="list" onClick={() => setView("list")}>
+            <CiBoxList className="me-2" /> List
+          </Tabs.Trigger>
+          <Tabs.Trigger value="grid" onClick={() => setView("grid")}>
+            <CiGrid41 className="me-2" /> Grid
+          </Tabs.Trigger>
+        </Tabs.List>
+      </Tabs.Root>
 
-          <Box pt="3">
-            <Tabs.Content value="grid">
-              
-            <Grid
-        columns={{ initial: "2", xs: "2", sm: "3", md: "4", lg: "4", xl: "5" }}
+      {/* Product Container with dynamic classes */}
+      <Grid
+        className={view === "grid" ? "grid-view" : "list-view"} // Add grid-view or list-view class
+        columns={view === "grid" ? { initial: "2", sm: "3", md: "4" } : { initial: "1", sm: "2", md: "3" }}
         gap="3"
-        >
-        {filteredProducts.map((product, index) => {
-          return (
-            <Card className="w-full" key={index}>
-              <Inset className="p-2">
-                <img
-                  src={`https://myhitech.digitalmantraaz.com/`+product.photo}
-                  style={{
-                    display: "block",
-                    objectFit: "cover",
-                    height: "150px",
-                  }}
-                  />
-              </Inset>  
-              <Text as="p" style={{marginTop:"10px"}} className="line-clamp-1" size={{initial:'1',xs:'2'}}>
-                <Strong>
+      >
+        {filteredProducts.map((product, index) => (
+          <Card key={index} className="product-card">
+            {/* Shared content for both views */}
+            <Box>
+              <img
+                src={`https://myhitech.digitalmantraaz.com/` + product.photo}
+                alt={product.title}
+                style={{ objectFit: "cover", height: view === "grid" ? "150px" : "100px", width: "100%" }}
+              />
+              <Text as="p" className="line-clamp-1" size="2" mt="2">
                 {product.title}
-
-                </Strong>
               </Text>
               <Flex className="mt-2">
-                <Text as="p" className="real price"> ₹{product.price}/- </Text>
+                <Text as="p" className="real price">₹{product.price}/-</Text>
                 <Text as="span" className="strike price">MRP ₹{Math.ceil(product.price / 0.25)}/-</Text>
               </Flex>
-              {
-                <div className="w-full show justify-center flex mt-3" >
-                <Flex className="">
-                    <Button variant="soft"  color="red">-</Button>
-                    <TextField.Root className="rounded-none w-[40px] mx-2 border-none bg-gray-200 center p-1" defaultValue={1}>
-                    </TextField.Root>
-                    <Button variant="soft"  color="green">+</Button>
-                  </Flex>
-              </div>   
-              }
-             {/* <Button className="block w-full text-center" color="grass" style={{width:"100%",marginTop:"8px"}} variant="soft" onClick={() => addToCart(product.id)}>
-              Add
-            </Button> */}
-
-            </Card>
-          );
-        })}
+            </Box>
+            {/* Buttons */}
+            <Flex className="mt-3">
+              <Button variant="soft" color="red">-</Button>
+              <TextField.Root className="rounded-none mx-2" defaultValue={1} />
+              <Button variant="soft" color="green">+</Button>
+            </Flex>
+          </Card>
+        ))}
       </Grid>
-            </Tabs.Content>
 
-            <Tabs.Content value="list">
-            <Grid
-        columns={{ initial: "1", xs: "2", sm: "2", md: "3", lg: "3", xl: "4" }}
-        gap="3"
-        >
-            {filteredProducts.map((product, index) => {
-          return (
-            <Card className="relative" key={index}>
-              <Flex justify="around">
-              <Inset >
-                <img
-                  src={`https://myhitech.digitalmantraaz.com/`+product.photo}
-                  style={{
-                    display: "block",
-                    objectFit: "cover",
-                    width: "100px",
-                    height:"100px"
-                  }}
-                  />
-              </Inset>  
-              <Box className="ms-5">
-              <Text as="p" className="line-clamp-1" size={{initial:'1',xs:'2'}} style={{maxWidth:"160px"}}>
-                <Strong>
-                {product.title}
-
-                </Strong>
-              </Text>
-              <Flex className="mt-2">
-                <Text as="p" className="real price"> ₹{product.price}/- </Text>
-                <Text as="span" className="strike price">MRP ₹{Math.ceil(product.price / 0.25)}/-</Text>
-              </Flex>
-              {
-                  
-              }
-             {/* <Button className="block w-full text-center" color="grass" style={{width:"100%",marginTop:"8px"}} variant="soft" onClick={() => addToCart(product.id)}>
-              Add
-            </Button> */}
-
-              </Box>
-
-            <Text as="p" size="1" className="individual-price absolute top-0 right-0 p-1"> ₹{0}/- </Text>
-              </Flex>
-              <div className="w-full show justify-end flex absolute bottom-0 right-0" >
-                <Flex className="">
-                    <Button variant="soft"  color="red">-</Button>
-                    <TextField.Root className="rounded-none w-[40px]" defaultValue={1} style={{border:"0"}}>
-                    </TextField.Root>
-                    <Button variant="soft"  color="green">+</Button>
-                  </Flex>
-              </div> 
-              
-
-            </Card>
-          );
-        })}
-        </Grid>
-
-            {/* <table class="table" style={{width:'100%'}}>
-                <thead>
-                  <th>S.No</th>
-                  <th>Product</th>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Qnt</th>
-                  <th>Total</th>
-                  <th>Add</th>
-                </thead>
-                <tbody>
-                  {
-                  filteredProducts.map((product,index)=>{
-                    return(
-                      <tr style={{border:"1px solid white"}}>
-                        <td className="text-center border-1" data-label="S.No">{index+1}</td>
-                        <td className="text-center border-1" data-label="Image">
-                        <img
-                              src={`https://myhitech.digitalmantraaz.com/`+product.photo}
-                              style={{
-                                display: "block",
-                                objectFit: "cover",
-                                maxWidth: "40px",
-                                height: "40px"
-                              }}
-                              />
-                          </td>
-                        <td className="text-center border-1" data-label="Name">{product.title}</td>
-                        <td className="text-center border-1" data-label="Price"> <span style={{textDecoration:"line-through",color:'#454545'}}>₹{Math.ceil(product.price-(product.price * 75/100))}/-</span> <span className="ms-2">₹{Math.ceil((product.price))}/-</span></td>
-                        <td className="text-center border-1" data-label="Qnt">
-                        <div className="show flex justify-center mt-3" >
-                          <Flex className="">
-                              <Button variant="soft" color="red" className="px-1">-</Button>
-                              <TextField.Root className="rounded-none w-[40px] border-none bg-gray-200 text-center p-1" defaultValue={1}>
-                              </TextField.Root>
-                              <Button variant="soft" color="green" className="px-1">+</Button>
-                            </Flex>
-                        </div> 
-                        </td>
-                        <td className="text-center border-1" data-label="Name">{product.price}</td>
-                        <td className="text-center border-1" data-label="addtocart">
-                          <Button onClick={()=>addToCart(product.id)}>Add</Button>
-                        </td>
-                      </tr>
-                    )
-                  })
-                  }
-                </tbody>
-              </table> */}
-            </Tabs.Content>
-          </Box>
-        </Tabs.Root>
-
-      
-      <Spinner loading={loading} size="3" style={{position:"absolute",top:"50%",left:"50%"}} />
-
-      {/* <Flex style={{ justifyContent: "center", margin: "20px" }}>
-            {!avail ? (
-              <Button
-                className={loading ? "hidden" : "block"}
-                onClick={() => setPage((page) => page + 1)}
-              >
-                {loading ? <Spinner loading={loading} /> : "Load more"}
-              </Button>
-            ) : (
-              "No More Products"
-            )}
-          </Flex> */}
-
-
-          
-        </Container>
-      
-    </>
+      {loading && <Spinner loading={loading} size="3" />}
+    </Box>
   );
 }
 
 export default Products;
-
