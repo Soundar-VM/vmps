@@ -3,29 +3,25 @@ import axios from "axios";
 import { Button, Flex, Text, Card, TextField, Tabs, Box, Grid ,Spinner } from "@radix-ui/themes";
 import Categories from "./Categories";
 import { CiBoxList, CiGrid41 } from "react-icons/ci";
+import productStore from "../store/productsStore";
+import cartStore from "../store/cartStore";
 
 function Products() {
-  const [products, setProducts] = useState([]);
+  // const [products, setProducts] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const [category, setCategory] = useState('');
   const [loading, setLoading] = useState(false);
   const [view, setView] = useState("grid"); // 'grid' or 'list'
 
+  const { products, fetchProducts } = productStore();
+  const { addToCart } = cartStore();
+
   // Fetch products
   useEffect(() => {
-    async function fetchProducts() {
       setLoading(true);
-      try {
-        const response = await axios.get(
-          "https://myhitech.digitalmantraaz.com/api/allproducts"
-        );
-        setProducts(response.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
+      fetchProducts()
       setLoading(false);
-    }
-    fetchProducts();
+      
   }, []);
 
   // Filter products
@@ -58,32 +54,33 @@ function Products() {
       {/* Product Container with dynamic classes */}
       <Grid
         className={view === "grid" ? "grid-view" : "list-view"} // Add grid-view or list-view class
-        columns={view === "grid" ? { initial: "2", sm: "3", md: "4" } : { initial: "1", sm: "2", md: "3" }}
+        columns={view === "grid" ? { initial: "2", sm: "3", md: "4" } : { initial: "1", sm: "1", md: "2" , lg:"3" }}
         gap="3"
       >
         {filteredProducts.map((product, index) => (
           <Card key={index} className="product-card">
             {/* Shared content for both views */}
-            <Box>
               <img
                 src={`https://myhitech.digitalmantraaz.com/` + product.photo}
                 alt={product.title}
-                style={{ objectFit: "cover", height: view === "grid" ? "150px" : "100px", width: "100%" }}
+                style={{ objectFit: "cover", height: view === "grid" ? "150px" : "100px", width: view === "grid" ? "100%" : "100px", }}
               />
+            <Box className={view === "grid" ? "" : "ms-4"}>
               <Text as="p" className="line-clamp-1" size="2" mt="2">
                 {product.title}
               </Text>
               <Flex className="mt-2">
-                <Text as="p" className="real price">₹{product.price}/-</Text>
                 <Text as="span" className="strike price">MRP ₹{Math.ceil(product.price / 0.25)}/-</Text>
+                <Text as="p" className="real price" size="2">₹{product.price}/-</Text>
+                <Text as="p" className="sub-total" size="2">₹{0}/-</Text>
+              </Flex>
+              <Flex className="mt-3 control">
+                <Button variant="soft" color="red">-</Button>
+                <TextField.Root className="rounded-none" defaultValue={1} style={{width:"40px"}} />
+                <Button variant="soft" color="green">+</Button>
               </Flex>
             </Box>
             {/* Buttons */}
-            <Flex className="mt-3">
-              <Button variant="soft" color="red">-</Button>
-              <TextField.Root className="rounded-none mx-2" defaultValue={1} />
-              <Button variant="soft" color="green">+</Button>
-            </Flex>
           </Card>
         ))}
       </Grid>

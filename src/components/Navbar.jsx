@@ -1,11 +1,14 @@
 import React from 'react'
 import {Flex } from '@radix-ui/themes'
+import { Switch } from "radix-ui";
 import { BsCart } from "react-icons/bs";
+import theme from '../store/theme'
 
 function Navbar() {
+  const {toggleTheme } = theme();
   return (
     <>
-        <div className="flex justify-between p-5">
+        <div className="flex justify-between p-5 fixed top-0 w-full z-10" style={{background: '#0090ff'}}>
             <div className="logo">
                 {/* <img src="" alt="" /> */}
                 <h2>Flipkart</h2>
@@ -13,8 +16,12 @@ function Navbar() {
             
 
             <Flex>
-                <BsCart style={{display:"none"}}/>
+                <BsCart/>
             </Flex>
+
+            <Switch.Root className="SwitchRoot" onCheckedChange={toggleTheme}>
+                <Switch.Thumb className="SwitchThumb" />
+            </Switch.Root>
 
         </div>
         

@@ -1,4 +1,6 @@
 import React,{ useEffect, useState } from "react";
+import filterToggle from "./store/filterToggle";
+import theme from "./store/theme";
 import "@radix-ui/themes/styles.css";
 import { Theme, CheckboxGroup, Box, DropdownMenu,RadioGroup } from "@radix-ui/themes";
 import Products from "./components/Products";
@@ -6,6 +8,8 @@ import Navbar from "./components/Navbar";
 import "./App.css";
 
 function App() {
+  const {status} = filterToggle();
+  const {themeStatus} = theme();
   const [selectedValues, setSelectedValues] = useState(["night"]);
   const [range, setRange] = useState('0');
 
@@ -17,13 +21,13 @@ function App() {
         accentColor="blue"
         radius="rounded-none large"
         scaling="100%"
-        appearance="dark"
+        appearance={themeStatus}
       >
         <Navbar />
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sticky top-0">
-          <div className="sm:col-span-12 md:col-span-3 lg:col-span-2 md:block sm:hidden p-4">
+          <div className="filter-box sm:col-span-12 md:col-span-3 lg:col-span-2 md:block xs:hidden p-4" style={{display:status?"block":"none"}}>
             <Box maxWidth="600px" className="sticky top-10">
-              <CheckboxGroup.Root defaultValue={["night"]} name="example" onValueChange={(values)=>setSelectedValues(values)}>
+              <CheckboxGroup.Root defaultValue={["night"]} name="example">
                 <CheckboxGroup.Item value="night">Night</CheckboxGroup.Item>
                 <CheckboxGroup.Item value="kids">Kids</CheckboxGroup.Item>
                 <CheckboxGroup.Item value="day">day</CheckboxGroup.Item>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import filterToggle from "../store/filterToggle";
 import axios from "axios";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { IoSearch } from "react-icons/io5";
 import { Button,TextField,Box,Flex,Select } from "@radix-ui/themes";
 
 function Categories({setValue,selectCategory,searchValue}) {
+  const { status,toggleStatus} = filterToggle();
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -25,14 +27,14 @@ function Categories({setValue,selectCategory,searchValue}) {
 
   return (
     <>
-     <Box className="search" width="100%" style={{position:"sticky",top:"10px",zIndex:"2"}}>
+     <Box className="search" width="100%" style={{position:"sticky",top:"75px",zIndex:"2",background:"#0090ff"}}>
                 <TextField.Root placeholder="Search the docs…" size="2" value={searchValue} onChange={(e)=>setValue(e.target.value)}>
                     <TextField.Slot>
                         <IoSearch size="14"/>  
                     </TextField.Slot>
                 </TextField.Root>
             </Box>
-    <div className=" flex justify-between" style={{position:"sticky",top:'100px',marginTop:"10px",zIndex:"2"}}>
+    <div className=" flex justify-between" style={{position:"sticky",top:'120px',marginTop:"10px",zIndex:"2"}}>
 
  
     <Select.Root 
@@ -54,7 +56,7 @@ function Categories({setValue,selectCategory,searchValue}) {
 
 
 
-<Button className="block">Filter</Button>
+<Button onClick={toggleStatus}>{status?"*":"Filter"}</Button>
 
 
 

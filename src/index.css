@@ -8,7 +8,13 @@
 .strike{
     position: relative;
     opacity: 0.3;
+    /* margin-left: 10px; */
+}
+
+.real.price{
     margin-left: 10px;
+    font-weight: 700;
+    
 }
 .strike::after{
     content: "";
@@ -28,4 +34,84 @@
         border: 1px solid #ffe000;
         border-right: 0;
         border-top: 0;
+}
+
+.list-view .product-card{
+    display: flex;
+
+}
+
+.list-view .product-card .control{
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+}
+.grid-view .product-card .control{
+    justify-content: center;
+}
+.product-card {
+    position: relative;
+}
+
+.list-view .sub-total{
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 4px ;
+    background-color: red;
+    border: 0;
+    border-bottom: 1px solid yellow;
+    border-left: 1px solid yellow;
+}
+.grid-view .sub-total{
+    display: none;
+}
+
+@media only screen and (max-width:768px){
+    .filter-box {
+        position: fixed;
+        width: 100%;
+        z-index: 2;
+        top: 165px;
+        background-color: #111113;
+    }
+}
+
+
+.SwitchRoot {
+	width: 32px;
+	height: 15px;
+	background-color: var(--black-a9);
+	border-radius: 9999px;
+	position: relative;
+	box-shadow: 0 2px 10px var(--black-a7);
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	&:focus {
+		box-shadow: 0 0 0 2px black;
+	}
+	&[data-state="checked"] {
+		background-color: black;
+	}
+}
+
+.SwitchThumb {
+	display: block;
+	width: 14px;
+	height: 14px;
+	background-color: white;
+	border-radius: 9999px;
+	box-shadow: 0 2px 2px var(--black-a7);
+	transition: transform 100ms;
+	transform: translateX(2px);
+	will-change: transform;
+	&[data-state="checked"] {
+		transform: translateX(19px);
+	}
+}
+
+.Label {
+	color: white;
+	font-size: 15px;
+	line-height: 1;
+	user-select: none;
 }
