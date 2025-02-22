@@ -17,9 +17,9 @@ function Navbar() {
             
 
             <div className='flex relative'>   
-                <Text>
+                {/* <Text>
                     {cart}
-                </Text>
+                </Text> */}
                 <Flex style={{fontSize:"20px",marginRight:"10px"}}>
                     <BsCart/>
                 </Flex>
