@@ -1,5 +1,7 @@
 import React,{ useEffect, useState } from "react";
+import Cookies from 'universal-cookie';
 import filterToggle from "./store/filterToggle";
+import CartFooter from "./components/CartFooter";
 import theme from "./store/theme";
 import "@radix-ui/themes/styles.css";
 import { Theme, CheckboxGroup, Box, DropdownMenu,RadioGroup } from "@radix-ui/themes";
@@ -12,6 +14,22 @@ function App() {
   const {themeStatus} = theme();
   const [selectedValues, setSelectedValues] = useState(["night"]);
   const [range, setRange] = useState('0');
+
+  useEffect(() => {
+    
+
+    const cookies = new Cookies(null, { path: '/' });
+    const userCookie = crypto.randomUUID();
+    // console.log(userCookie);
+    
+    if(cookies.get('userCookie')){
+      console.log(cookies.get('userCookie'));
+    }
+    else{
+      cookies.set('userCookie', userCookie);
+    }
+
+  }, []);
 
 
 
@@ -26,7 +44,7 @@ function App() {
         <Navbar />
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sticky top-0">
           <div className="filter-box sm:col-span-12 md:col-span-3 lg:col-span-2 md:block xs:hidden" style={{display:status?"block":"none"}}>
-            <Box maxWidth="600px" className="sticky top-10">
+            <Box maxWidth="600px" className="sticky top-10 p-4">
               <CheckboxGroup.Root defaultValue={["night"]} name="example">
                 <CheckboxGroup.Item value="night">Night</CheckboxGroup.Item>
                 <CheckboxGroup.Item value="kids">Kids</CheckboxGroup.Item>
@@ -54,6 +72,8 @@ function App() {
             <Products range={range} selectedValues={selectedValues}/>
           </div>
         </div>
+
+        <CartFooter/>
       </Theme>
     </>
   );

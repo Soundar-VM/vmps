@@ -15,7 +15,7 @@ function Products() {
   const [loading, setLoading] = useState(false);
   const [view, setView] = useState("grid"); // 'grid' or 'list'
 
-  const { addToCart } = cartStore();
+  const { addToCart ,removeFromCart } = cartStore();
 
   // Fetch products
   useEffect(() => {
@@ -81,9 +81,9 @@ function Products() {
                 <Text as="p" className="sub-total" size="2">₹{0}/-</Text>
               </Flex>
               <Flex className="mt-3 control">
-                <Button variant="soft" color="red">-</Button>
+                <Button variant="soft" color="red" onClick={()=>removeFromCart(product)}>-</Button>
                 <TextField.Root className="rounded-none" defaultValue={1} style={{width:"40px"}} />
-                <Button variant="soft" color="green">+</Button>
+                <Button variant="soft" color="green" onClick={()=>addToCart(product)}>+</Button>
               </Flex>
             </Box>
             {/* Buttons */}
