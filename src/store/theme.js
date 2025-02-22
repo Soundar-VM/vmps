@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 const theme = create((set) => ({
-  themeStatus: "light",
+  themeStatus: "dark",
   toggleTheme: () => set((state) => ({ themeStatus: state.themeStatus === "light" ? "dark" : "light" })),
 }));
 

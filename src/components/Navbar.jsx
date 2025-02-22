@@ -8,7 +8,7 @@ function Navbar() {
   const {toggleTheme } = theme();
   return (
     <>
-        <div className="flex justify-between p-5 fixed top-0 w-full z-10" style={{background: '#0090ff'}}>
+        <div className="flex justify-between p-5 sticky top-0 w-full z-10" style={{background:"rgb(0 144 255)"}}>
             <div className="logo">
                 {/* <img src="" alt="" /> */}
                 <h2>Flipkart</h2>

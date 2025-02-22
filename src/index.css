@@ -71,9 +71,10 @@
     .filter-box {
         position: fixed;
         width: 100%;
+        padding: 10px;
         z-index: 2;
-        top: 165px;
-        background-color: #111113;
+        top: 167px;
+        background-color: #4c5971;
     }
 }
 
