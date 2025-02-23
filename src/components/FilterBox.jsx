@@ -7,7 +7,7 @@ import { Button, TextField, Box, Flex, Select, Tabs } from "@radix-ui/themes";
 import { MdClose } from "react-icons/md";
 import { CiFilter } from "react-icons/ci";
 
-function FilterBox({ setValue, selectCategory, searchValue, setView }) {
+function FilterBox({ setValue, selectCategory, searchValue, setView,category }) {
   const { status, toggleStatus } = filterToggle();
   const [categories, setCategories] = useState([]);
 
@@ -20,7 +20,7 @@ function FilterBox({ setValue, selectCategory, searchValue, setView }) {
       const response = await axios.get(
         "https://myhitech.digitalmantraaz.com/api/categorys"
       );
-      setCategories(response.data); // Ensure API returns an array
+      setCategories(response.data);
       console.log(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -30,7 +30,7 @@ function FilterBox({ setValue, selectCategory, searchValue, setView }) {
   return (
     <div className="mb-5" style={{
         position: "sticky",
-        top: "60px",
+        top: "63px",
         zIndex: "2",
         background:"#697284",
         padding:"10px"
@@ -57,7 +57,7 @@ function FilterBox({ setValue, selectCategory, searchValue, setView }) {
         
       >
         <Select.Root
-          defaultValue="all" // Show "All" by default
+          defaultValue={category} // Show "All" by default
           onValueChange={(value) => selectCategory(value)}
         >
           <Select.Trigger /> {/* This will show "All" by default */}
