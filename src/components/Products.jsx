@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import {
   Button,
   Flex,
@@ -20,56 +19,37 @@ function Products({ rangeRadio, selectedValues }) {
   const [searchValue, setSearchValue] = useState("");
   const [category, setCategory] = useState("all");
   const [loading, setLoading] = useState(false);
-  const [view, setView] = useState("grid"); 
+  const [view, setView] = useState("grid");
 
-  const { addToCart, removeFromCart } = cartStore();
-
-
-
-  // Fetch products
+  const { addToCart, removeFromCart, cart } = cartStore(); // Get cart from Zustand store
 
   useEffect(() => {
-    console.log(view);
-
     setLoading(true);
     fetchProducts();
     setLoading(false);
   }, []);
 
-
-  function handleSetCategory(val){
+  function handleSetCategory(val) {
     setSearchValue("");
     setCategory(val);
-    console.log(val);
   }
-  function handleSetSearchValue(val){
+
+  function handleSetSearchValue(val) {
     setCategory("all");
     setSearchValue(val);
-    console.log(val);
-    
   }
 
-
   // Filter products
-
   const filteredProducts = products.filter((product) => {
     const matchesSearch = searchValue
       ? product.title.toLowerCase().includes(searchValue.toLowerCase())
       : true;
-  
+
     const matchesCheckboxCategory =
-      selectedValues.length > 0
-        ? selectedValues.includes(product.condition)
-        : true;
-  
-    // ✅ Call the function to evaluate the condition
-    const matchesDropdownCategory = (() => {
-      if (category !== "all") {
-        return String(product.cat_id) === category; 
-      }
-      return true;
-    })(); 
-  
+      selectedValues.length > 0 ? selectedValues.includes(product.condition) : true;
+
+    const matchesDropdownCategory = category !== "all" ? String(product.cat_id) === category : true;
+
     const matchesPrice = rangeRadio
       ? (() => {
           const productPrice = parseFloat(product.price);
@@ -82,10 +62,9 @@ function Products({ rangeRadio, selectedValues }) {
           return true;
         })()
       : true;
-  
+
     return matchesSearch && matchesDropdownCategory && matchesCheckboxCategory && matchesPrice;
   });
-  
 
   return (
     <Box className="relative min-h-screen">
@@ -106,64 +85,68 @@ function Products({ rangeRadio, selectedValues }) {
           }
           gap="3"
         >
-          {filteredProducts.map((product, index) => (
-            <Card key={index} className="product-card p-0">
-              {/* Shared content for both views */}
-              <img
-                src={`https://myhitech.digitalmantraaz.com/` + product.photo}
-                alt={product.title}
-                style={{
-                  objectFit: "cover",
-                  height: view === "grid" ? "150px" : "100px",
-                  width: view === "grid" ? "100%" : "100px",
-                }}
-              />
-              <Box className={view === "grid" ? "" : "ms-2"}>
-                <Text as="p" className="line-clamp-1" size="2" mt="2">
-                  {product.title}
-                </Text>
-                <Flex className="mt-2">
-                  <Text as="span" className="strike price">
-                    MRP ₹{Math.ceil(product.price / 0.25)}/-
+          {filteredProducts.map((product) => {
+            const cartItem = cart.find((item) => item.id === product.id);
+            const quantity = cartItem ? cartItem.quantity : 0; // Get quantity from cart
+
+            return (
+              <Card key={product.id} className="product-card p-0">
+                <img
+                  src={`https://myhitech.digitalmantraaz.com/` + product.photo}
+                  alt={product.title}
+                  style={{
+                    objectFit: "cover",
+                    height: view === "grid" ? "150px" : "100px",
+                    width: view === "grid" ? "100%" : "100px",
+                  }}
+                />
+                <Box className={view === "grid" ? "" : "ms-2"}>
+                  <Text as="p" className="line-clamp-1" size="2" mt="2">
+                    {product.title}
                   </Text>
-                  <Text as="p" className="real price" size="2">
-                    ₹{product.price}/-
-                  </Text>
-                  <Text as="p" className="sub-total" size="2">
-                    ₹{0}/-
-                  </Text>
-                </Flex>
-                <Flex className="mt-3 control">
-                  <Button
-                    variant="soft"
-                    color="red"
-                    onClick={() => removeFromCart(product)}
-                  >
-                    -
-                  </Button>
-                  <TextField.Root
-                    className="rounded-none"
-                    defaultValue={1}
-                    style={{ width: "40px" }}
-                  />
-                  <Button
-                    variant="soft"
-                    color="green"
-                    onClick={() => addToCart(product)}
-                  >
-                    +
-                  </Button>
-                </Flex>
-              </Box>
-              {/* Buttons */}
-            </Card>
-          ))}
+                  <Flex className="mt-2">
+                    <Text as="span" className="strike price">
+                      MRP ₹{Math.ceil(product.price / 0.25)}/-
+                    </Text>
+                    <Text as="p" className="real price" size="2">
+                      ₹{product.price}/-
+                    </Text>
+                    <Text as="p" className="sub-total" size="2">
+                      ₹{quantity * product.price}/-
+                    </Text>
+                  </Flex>
+                  <Flex className="mt-3 control">
+                    <Button
+                      variant="soft"
+                      color="red"
+                      onClick={() => removeFromCart(product.id)}
+                      disabled={quantity === 0}
+                    >
+                      -
+                    </Button>
+
+                    <TextField.Root
+                      className="rounded-none"
+                      value={quantity} // Use Zustand cart state
+                      onChange={(e) => {
+                        const newQuantity = Math.max(1, parseInt(e.target.value, 10) || 1);
+                        addToCart(product.id, newQuantity); // Update Zustand store
+                      }}
+                      style={{ width: "40px", textAlign: "center" }}
+                    />
+
+                    <Button variant="soft" color="green" onClick={() => addToCart(product.id, quantity + 1)}>
+                      +
+                    </Button>
+                  </Flex>
+                </Box>
+              </Card>
+            );
+          })}
         </Grid>
       </div>
 
-      {loading && (
-        <Spinner loading={loading} size="3" className="fixed top-50 left-50" />
-      )}
+      {loading && <Spinner loading={loading} size="3" className="fixed top-50 left-50" />}
     </Box>
   );
 }

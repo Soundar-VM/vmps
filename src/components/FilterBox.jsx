@@ -83,7 +83,7 @@ function FilterBox({ setValue, selectCategory, searchValue, setView,category }) 
             </Tabs.Trigger> 
           </Tabs.List>
         </Tabs.Root>
-        <Button className="block md:!hidden" onClick={toggleStatus} >{status ? <MdClose /> : <CiFilter />}</Button>
+        <Button className="block md:!hidden" onClick={toggleStatus} >{status ? <MdClose /> : <>Filter <CiFilter /></>}</Button>
       </div>
     </div>
   );
