@@ -87,7 +87,7 @@ function Products({ rangeRadio, selectedValues }) {
         >
           {filteredProducts.map((product) => {
             const cartItem = cart.find((item) => item.id === product.id);
-            const quantity = cartItem ? cartItem.quantity : 0; // Get quantity from cart
+            const quantity = cartItem ?  cartItem.quantity: 0; // Get quantity from cart
 
             return (
               <Card key={product.id} className="product-card p-0">
