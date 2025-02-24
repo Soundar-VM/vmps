@@ -11,7 +11,7 @@ import {
   Grid,
   Spinner,
 } from "@radix-ui/themes";
-import FilterBox from "./filterBox";
+import FilterBox from "./FilterBox";
 import productStore from "../store/productsStore";
 import cartStore from "../store/cartStore";
 
