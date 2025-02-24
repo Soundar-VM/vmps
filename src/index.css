@@ -126,6 +126,6 @@
         align-items: center;
         border-radius: 50%;
         border: 2px solid #ffffff;
-        padding: 3px;
+        padding: 1px 5px;
         aspect-ratio: 1;
 }
