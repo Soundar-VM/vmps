@@ -14,10 +14,12 @@ import {
 } from "@radix-ui/themes";
 import Products from "./components/Products";
 import Navbar from "./components/Navbar";
+import Cart from "./components/Cart";
 import "./App.css";
 
 function App() {
-  const { status } = filterToggle();
+
+  const { status,updateStatus } = filterToggle();
   const { themeStatus } = theme();
   const [selectedValues, setSelectedValues] = useState([]);
   const [rangeRadio, setRange] = useState("0");
@@ -41,6 +43,23 @@ function App() {
   const handleCategoryChange = (value) => {
     setSelectedValues(value);
   };
+
+
+
+  
+    
+  
+    useEffect(() => {
+      const handleResize = () => {
+        const isLaptop = window.innerWidth > 768;
+        updateStatus(isLaptop); // Update Zustand state based on screen width
+      };
+  
+      handleResize(); // Run on mount to set the initial state
+      window.addEventListener("resize", handleResize);
+  
+      return () => window.removeEventListener("resize", handleResize); // Cleanup
+    }, [updateStatus]);
 
   return (
     <>
@@ -94,7 +113,7 @@ function App() {
             <Products selectedValues={selectedValues} rangeRadio={rangeRadio} />
           </div>
         </div>
-
+        {/* <Cart/> */}
         <CartFooter />
       </Theme>
     </>

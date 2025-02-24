@@ -6,20 +6,20 @@ import productStore from '../store/productsStore';
 function Cart() {
     const {products} = cartStore();
     const {cart, getTotalPrice} = cartStore();
-  return (
-    <>
-        {cart.map((item,index)=>(
-            products.map(()=>{
-                
-            })
-            const product = products.find((product) => product.id === item.id);
+    return (
+        <>
+        {cartValues.map((product,index)=>( product.id==cart.id) ? (
             <div key={index}>
-                <Text as="p" size="1">{item.id}</Text>
-                <Text as="p" size="1">{item.quantity}</Text>
+                <Text>{product.title}</Text>
+                <Text>{product.price}</Text>
+                <Button onClick={()=>removeFromCart(product.id)}>Remove</Button>
             </div>
-        ))}
-    </>
-  )
+            ):null)}
+        <Text>{getTotalPrice}</Text>
+        <Button onClick={()=>clearCart()}>Clear Cart</Button>   
+        </>
+    )
 }
+
 
 export default Cart
