@@ -97,7 +97,7 @@ function Products({ rangeRadio, selectedValues }) {
       return (
         <div key={category.id}>
           
-          <h2 className="my-10 text-[20px]"><b>{category.title}</b></h2>
+          <h2 className="my-5 ms-5 text-[20px]"><b>{category.title}</b></h2>
           <Grid
             className={view === "grid" ? "grid-view" : "list-view"}
             columns={view === "grid"
