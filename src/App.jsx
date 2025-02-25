@@ -70,6 +70,7 @@ function App() {
         appearance={themeStatus}
       >
         <Navbar />
+        <Cart/>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sticky top-0">
           <div
             className="filter-box sm:col-span-12 md:col-span-3 lg:col-span-2"
@@ -113,8 +114,8 @@ function App() {
             <Products selectedValues={selectedValues} rangeRadio={rangeRadio} />
           </div>
         </div>
-        {/* <Cart/> */}
         <CartFooter />
+        
       </Theme>
     </>
   );

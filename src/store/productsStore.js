@@ -7,9 +7,9 @@ const productStore = create((set) => ({
       const res = await fetch('https://myhitech.digitalmantraaz.com/api/allproducts'); // Adjust API endpoint
       const data = await res.json();
       set({ products: data });
-      console.error(data);
+      // console.error(data);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      // console.error("Error fetching products:", error);
     }
   },
 }));

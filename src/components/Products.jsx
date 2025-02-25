@@ -13,21 +13,29 @@ import {
 import FilterBox from "./FilterBox";
 import productStore from "../store/productsStore";
 import cartStore from "../store/cartStore";
+import categoryStore from "../store/categoryStore";
 
 function Products({ rangeRadio, selectedValues }) {
+  const {categories, fetchCategories} = categoryStore();
   const { products, fetchProducts } = productStore();
   const [searchValue, setSearchValue] = useState("");
   const [category, setCategory] = useState("all");
   const [loading, setLoading] = useState(false);
-  const [view, setView] = useState("grid");
+  const [view, setView] = useState(window.innerWidth > 768 ? "grid" : "list");
 
-  const { addToCart, removeFromCart, cart } = cartStore(); // Get cart from Zustand store
+  const { addToCart, removeFromCart, cart ,removeSingle } = cartStore(); // Get cart from Zustand store
 
   useEffect(() => {
-    setLoading(true);
-    fetchProducts();
-    setLoading(false);
+     fetchData();
+  
   }, []);
+  
+  const fetchData = async () => {
+    setLoading(true);
+     fetchProducts();
+     fetchCategories();
+    setLoading(false);
+  };
 
   function handleSetCategory(val) {
     setSearchValue("");
@@ -74,77 +82,98 @@ function Products({ rangeRadio, selectedValues }) {
         searchValue={searchValue}
         setView={setView}
         category={category}
+        tabView={view}
       />
       <div>
-        <Grid
-          className={view === "grid" ? "grid-view" : "list-view"}
-          columns={
-            view === "grid"
+      {categories
+    .filter((category) => 
+      filteredProducts.some((product) => product.cat_id === category.id) // ✅ Only keep categories with products
+    )
+    .map((category) => {
+      // Get products belonging to this category
+      const categoryProducts = filteredProducts.filter(
+        (product) => product.cat_id === category.id
+      );
+      return (
+        <div key={category.id}>
+          
+          <h2 className="my-10 text-[20px]"><b>{category.title}</b></h2>
+          <Grid
+            className={view === "grid" ? "grid-view" : "list-view"}
+            columns={view === "grid"
               ? { initial: "2", sm: "3", md: "4", lg: "6", xl: "6" }
-              : { initial: "1", sm: "1", md: "2", lg: "3" }
-          }
-          gap="3"
-        >
-          {filteredProducts.map((product) => {
-            const cartItem = cart.find((item) => item.id === product.id);
-            const quantity = cartItem ?  cartItem.quantity: 0; // Get quantity from cart
+              : { initial: "1", sm: "1", md: "2", lg: "3" }}
+            gap="3"
+          >
+            {categoryProducts.map((product) => {
+              const cartItem = cart.find((item) => item.id === product.id);
+              const quantity = cartItem ? cartItem.quantity : 0;
 
-            return (
-              <Card key={product.id} className="product-card p-0">
-                <img
-                  src={`https://myhitech.digitalmantraaz.com/` + product.photo}
-                  alt={product.title}
-                  style={{
-                    objectFit: "cover",
-                    height: view === "grid" ? "150px" : "100px",
-                    width: view === "grid" ? "100%" : "100px",
-                  }}
-                />
-                <Box className={view === "grid" ? "" : "ms-2"}>
-                  <Text as="p" className="line-clamp-1" size="2" mt="2">
-                    {product.title}
-                  </Text>
-                  <Flex className="mt-2">
-                    <Text as="span" className="strike price">
-                      MRP ₹{Math.ceil(product.price / 0.25)}/-
+              return (
+                <Card key={product.id} className="product-card p-0">
+                  <img
+                    src={`https://myhitech.digitalmantraaz.com/${product.photo}`}
+                    alt={product.title}
+                    style={{
+                      objectFit: "cover",
+                      height: view === "grid" ? "150px" : "100px",
+                      width: view === "grid" ? "100%" : "100px",
+                    }}
+                  />
+                  <Box className={view === "grid" ? "" : "ms-2"}>
+                    <Text as="p" className="line-clamp-1" size="2" mt="2">
+                      {product.title}
                     </Text>
-                    <Text as="p" className="real price" size="2">
-                      ₹{product.price}/-
-                    </Text>
-                    <Text as="p" className="sub-total" size="2">
-                      ₹{quantity * product.price}/-
-                    </Text>
-                  </Flex>
-                  <Flex className="mt-3 control">
-                    <Button
-                      variant="soft"
-                      color="red"
-                      onClick={() => removeFromCart(product.id)}
-                      disabled={quantity === 0}
-                    >
-                      -
-                    </Button>
+                    <Flex className="mt-2">
+                      <Text as="span" className="strike price">
+                        MRP ₹{Math.ceil(product.price / 0.25)}/-
+                      </Text>
+                      <Text as="p" className="real price" size="2">
+                        ₹{product.price}/-
+                      </Text>
+                      <Text as="p" className="sub-total" size="2">
+                        ₹{quantity * product.price}/-
+                      </Text>
+                    </Flex>
+                    <Flex className="mt-3 control">
+                      <Button
+                        variant="soft"
+                        color="red"
+                        onClick={() => removeSingle(product.id)}
+                        disabled={quantity === 0}
+                      >
+                        -
+                      </Button>
 
-                    <TextField.Root
-                      className="rounded-none"
-                      value={quantity} // Use Zustand cart state
-                      onChange={(e) => {
-                        const newQuantity = Math.max(1, parseInt(e.target.value, 10) || 1);
-                        addToCart(product.id, newQuantity); // Update Zustand store
-                      }}
-                      style={{ width: "40px", textAlign: "center" }}
-                    />
+                      <TextField.Root
+                        className="rounded-none"
+                        value={quantity}
+                        onChange={(e) => {
+                          const newQuantity = Math.max(1, parseInt(e.target.value, 10) || 1);
+                          addToCart(product.id,product.cat_id, newQuantity);
+                        }}
+                        style={{ width: "40px", textAlign: "center" }}
+                      />
 
-                    <Button variant="soft" color="green" onClick={() => addToCart(product.id, quantity + 1)}>
-                      +
-                    </Button>
-                  </Flex>
-                </Box>
-              </Card>
-            );
-          })}
-        </Grid>
-      </div>
+                      <Button
+                        variant="soft"
+                        color="green"
+                        onClick={() => addToCart(product.id,product.cat_id, quantity + 1)}
+                      >
+                        +
+                      </Button>
+                    </Flex>
+                  </Box>
+                </Card>
+              );
+            })}
+          </Grid >
+        </div>
+      );
+    })
+    .filter(Boolean)} {/* Remove null values from array */}
+</div>
+
 
       {loading && <Spinner loading={loading} size="3" className="fixed top-50 left-50" />}
     </Box>

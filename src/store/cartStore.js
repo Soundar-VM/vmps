@@ -8,7 +8,7 @@ const getLocalCart = () => {
 const cartStore = create((set, get) => ({
   cart: getLocalCart(),
 
-  addToCart: (id, quantity = 1) => {
+  addToCart: (id,cat_id, quantity = 1) => {
     set((state) => {
       const cart = [...state.cart];
       const index = cart.findIndex((item) => item.id === id);
@@ -17,6 +17,26 @@ const cartStore = create((set, get) => ({
         cart[index] = { ...cart[index], quantity }; 
       } else {
         cart.push({ id, quantity });
+      }
+
+      return { cart };
+    });
+    console.log(get().cart);
+    localStorage.setItem("cart", JSON.stringify(get().cart));
+    
+  },
+  removeSingle: (id,cat_id, quantity = 1) => {
+    set((state) => {
+      const cart = [...state.cart];
+      const index = cart.findIndex((item) => item.id === id);
+
+      if (index !== -1) {
+        const newQuantity = cart[index].quantity - quantity;
+        if (newQuantity > 0) {
+          cart[index] = { ...cart[index], quantity: newQuantity };
+        } else {
+          cart.splice(index, 1); // Remove the item if quantity <= 0
+        }
       }
 
       return { cart };

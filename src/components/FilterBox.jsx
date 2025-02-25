@@ -7,12 +7,14 @@ import { Button, TextField, Box, Flex, Select, Tabs } from "@radix-ui/themes";
 import { MdClose } from "react-icons/md";
 import { CiFilter } from "react-icons/ci";
 
-function FilterBox({ setValue, selectCategory, searchValue, setView,category }) {
+function FilterBox({ setValue, selectCategory, searchValue, setView, category, tabView }) {
   const { status, toggleStatus } = filterToggle();
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     getCategories();
+    console.log(tabView);
+    
   }, []);
 
   async function getCategories() {
@@ -60,7 +62,7 @@ function FilterBox({ setValue, selectCategory, searchValue, setView,category }) 
           defaultValue={category} // Show "All" by default
           onValueChange={(value) => selectCategory(value)}
         >
-          <Select.Trigger /> {/* This will show "All" by default */}
+          <Select.Trigger /> 
           <Select.Content>
             <Select.Group>
               <Select.Item value="all">All</Select.Item>
@@ -73,7 +75,7 @@ function FilterBox({ setValue, selectCategory, searchValue, setView,category }) 
           </Select.Content>
         </Select.Root>
 
-        <Tabs.Root defaultValue="grid" className="">
+        <Tabs.Root defaultValue={tabView} className="">
           <Tabs.List>
             <Tabs.Trigger value="list" onClick={() => setView("list")}>
               <CiBoxList className="me-2" /> List

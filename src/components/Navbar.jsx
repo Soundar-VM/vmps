@@ -18,7 +18,7 @@ function Navbar() {
 
             <div className='flex relative'>   
                 
-                <Flex style={{fontSize:"20px",marginRight:"30px",position:'relative'}}>
+                <Flex style={{fontSize:"20px",marginRight:"30px",position:'relative'}} data-drawer-target="drawer-example" data-drawer-show="drawer-example" aria-controls="drawer-example">
                     <Text as="p" size="1" className='absolute qnt-show'>{cart.length}</Text>
                     <BsCart/>
                 </Flex>
