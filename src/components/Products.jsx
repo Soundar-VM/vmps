@@ -126,13 +126,13 @@ function Products({ rangeRadio, selectedValues }) {
                     </Text>
                     <Flex className="mt-2">
                       <Text as="span" className="strike price">
-                        MRP ₹{Math.ceil(product.price / 0.25)}/-
+                        MRP ₹{product.price}/-
                       </Text>
                       <Text as="p" className="real price" size="2">
-                        ₹{product.price}/-
+                        ₹{Math.ceil(product.price - (product.price *(product.discount/100)))}/-
                       </Text>
                       <Text as="p" className="sub-total" size="2">
-                        ₹{quantity * product.price}/-
+                        ₹{quantity * Math.ceil(product.price - (product.price *(product.discount/100)))}/-
                       </Text>
                     </Flex>
                     <Flex className="mt-3 control">
