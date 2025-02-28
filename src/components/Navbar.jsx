@@ -4,8 +4,10 @@ import { Switch } from "radix-ui";
 import { BsCart } from "react-icons/bs";
 import theme from '../store/theme'
 import cartStore from '../store/cartStore';
+import cartToggle from "../store/cartToggle";
 
 function Navbar() {
+    const { cartStatus, cartStatusToggle } = cartToggle();
   const {toggleTheme } = theme();
   const {cart} = cartStore();
   return (
@@ -20,7 +22,7 @@ function Navbar() {
                 
                 <Flex style={{fontSize:"20px",marginRight:"30px",position:'relative'}} data-drawer-target="drawer-example" data-drawer-show="drawer-example" aria-controls="drawer-example">
                     <Text as="p" size="1" className='absolute qnt-show'>{cart.length}</Text>
-                    <BsCart/>
+                    <button onClick={()=>cartStatusToggle()}><BsCart/></button>
                 </Flex>
 
             <Switch.Root className="SwitchRoot" onCheckedChange={toggleTheme} >

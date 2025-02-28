@@ -7,7 +7,7 @@ function CartFooter() {
   
   return (
     <>
-      <div className='flex md:hidden fixed bottom-0 z-10 w-full justify-between items-center' style={{background:"#000",width:"100%",padding:"10px",borderTop:"1px solid #ccc"}}>
+      <div className='flex md:hidden fixed bottom-0 z-8 w-full justify-between items-center' style={{background:"#000",width:"100%",padding:"10px",borderTop:"1px solid #ccc"}}>
         <Button> View Cart</Button>
         <Text as="p" className="real price" size="1">you saved ₹200/-</Text>
         <Text as="p" className="real price" size="2">₹{getTotalPrice}/-</Text>

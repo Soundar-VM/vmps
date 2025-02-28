@@ -97,7 +97,7 @@ function Products({ rangeRadio, selectedValues }) {
       return (
         <div key={category.id}>
           
-          <h2 className="my-5 ms-5 text-[20px]"><b>{category.title}</b></h2>
+          <h2 className="my-5 py-2 ps-5 border-t-1 border-b-1 border-soild border-white bg-sky-900"><b>{category.title}</b></h2>
           <Grid
             className={view === "grid" ? "grid-view" : "list-view"}
             columns={view === "grid"
@@ -138,6 +138,7 @@ function Products({ rangeRadio, selectedValues }) {
                     <Flex className="mt-3 control">
                       <Button
                         variant="soft"
+                        className="cursor-pointer"
                         color="red"
                         onClick={() => removeSingle(product.id)}
                         disabled={quantity === 0}
@@ -156,6 +157,7 @@ function Products({ rangeRadio, selectedValues }) {
                       />
 
                       <Button
+                      className="cursor-pointer"
                         variant="soft"
                         color="green"
                         onClick={() => addToCart(product.id,product.cat_id, quantity + 1)}
