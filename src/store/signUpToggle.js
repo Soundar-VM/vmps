@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 const signUpToggle = create((set) => ({
-  signUpStatus: false, 
+  signUpStatus: true, 
   signUpStatusToggle: () => set((state) => ({ signUpStatus: !state.signUpStatus })),
 }));
 

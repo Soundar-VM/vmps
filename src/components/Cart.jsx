@@ -42,7 +42,7 @@ function Cart() {
   }, [cartItems]);
 
   return (
-    <div className="fixed right-0 w-100 h-full bg-black z-[9] shadow-lg" style={{paddingBottom:"100px",display:cartStatus?"block":"none"}}>
+    <div className="fixed right-0 w-100 h-full bg-black z-1 shadow-lg" style={{paddingBottom:"100px",display:cartStatus?"block":"none"}}>
       <div className="flex justify-between py-5 px-5" style={{width:"100%"}}>
         <button className="text-white-950 cursor-pointer" onClick={()=>cartStatusToggle()}><MdClose style={{color:"white"}}/></button>
         <h1  className="font-bold">Cart</h1>
@@ -126,7 +126,7 @@ function Cart() {
         <div className="fixed bottom-0 w-100">
               <p className="text-center bg-white text-black py-1">You saved <span className="text-[13px] text-red-700">₹{totalPriceDiscount}/-</span></p>
               <div className="flex justify-between">
-              <button className="bg-[#0090ff] text-white-900  font-bold w-50 border-r-2 text-[18px]" onClick={signUpStatusToggle}>Checkout</button>
+              <button className="bg-[#0090ff] text-white-900  font-bold w-50 border-r-2 text-[18px]" onClick={()=>{cartStatusToggle(),signUpStatusToggle()}}>Checkout</button>
               <p className="bg-green-600 text-white-900 font-bold w-50 text-center" style={{lineHeight:"35px"}}>Total <span>₹{totalPrice}/-</span></p>
 
           </div>
