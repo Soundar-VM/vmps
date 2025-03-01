@@ -14,28 +14,51 @@ import FilterBox from "./FilterBox";
 import productStore from "../store/productsStore";
 import cartStore from "../store/cartStore";
 import categoryStore from "../store/categoryStore";
+import cartToggle from "../store/cartToggle";
+
 
 function Products({ rangeRadio, selectedValues }) {
+  const { cartStatus,cartStatusToggle } = cartToggle();
+   const [cartItems, setCartItems] = useState([]);
   const {categories, fetchCategories} = categoryStore();
   const { products, fetchProducts } = productStore();
   const [searchValue, setSearchValue] = useState("");
   const [category, setCategory] = useState("all");
   const [loading, setLoading] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalPriceDiscount, setTotalPriceDiscount] = useState(0);
   const [view, setView] = useState(window.innerWidth > 768 ? "grid" : "list");
 
   const { addToCart, removeFromCart, cart ,removeSingle } = cartStore(); // Get cart from Zustand store
+  
+  useEffect(() => {
+    // Merge cart items with product details
+    const updatedCart = cart.map((cartItem) => {
+      const product = products.find((p) => p.id === cartItem.id);
+      return product ? { ...cartItem, ...product } : null;
+    }).filter(Boolean); // Remove null values
+
+    setCartItems(updatedCart);
+  }, [cart, products]);
 
   useEffect(() => {
-     fetchData();
-  
-  }, []);
-  
+    const total = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const totalDiscount = cartItems.reduce((acc, item) => acc - ((item.price * item.quantity) - (item.quantity * (item.mrp))) , 0);
+    setTotalPrice(total);
+    setTotalPriceDiscount(totalDiscount);
+  }, [cartItems]);
+
+
+useEffect(() => {
   const fetchData = async () => {
     setLoading(true);
-     fetchProducts();
-     fetchCategories();
-    setLoading(false);
+    await fetchProducts();
+    await fetchCategories();
+    setLoading(true);
   };
+
+  fetchData();
+}, []);
 
   function handleSetCategory(val) {
     setSearchValue("");
@@ -126,13 +149,13 @@ function Products({ rangeRadio, selectedValues }) {
                     </Text>
                     <Flex className="mt-2">
                       <Text as="span" className="strike price">
-                        MRP ₹{product.price}/-
+                        MRP ₹{product.mrp}/-
                       </Text>
                       <Text as="p" className="real price" size="2">
-                        ₹{Math.ceil(product.price - (product.price *(product.discount/100)))}/-
+                        ₹{product.price}/-
                       </Text>
                       <Text as="p" className="sub-total" size="2">
-                        ₹{quantity * Math.ceil(product.price - (product.price *(product.discount/100)))}/-
+                        ₹{quantity * product.price}/-
                       </Text>
                     </Flex>
                     <Flex className="mt-3 control">
@@ -142,8 +165,7 @@ function Products({ rangeRadio, selectedValues }) {
                         color="red"
                         onClick={() => removeSingle(product.id)}
                         disabled={quantity === 0}
-                      >
-                        -
+                      >   -
                       </Button>
 
                       <TextField.Root
@@ -160,7 +182,7 @@ function Products({ rangeRadio, selectedValues }) {
                       className="cursor-pointer"
                         variant="soft"
                         color="green"
-                        onClick={() => addToCart(product.id,product.cat_id, quantity + 1)}
+                        onClick={() => addToCart(product.id,product.cat_id)}
                       >
                         +
                       </Button>
@@ -178,7 +200,13 @@ function Products({ rangeRadio, selectedValues }) {
 
 
       {loading && <Spinner loading={loading} size="3" className="fixed top-50 left-50" />}
+      <div className='flex md:hidden fixed bottom-0 z-8 w-full justify-between items-center' style={{background:"#000",width:"100%",padding:"10px",borderTop:"1px solid #ccc"}}>
+              <Button onClick={()=>cartStatusToggle()}> View Cart</Button>
+              <Text as="p" className="real price" size="1">you saved ₹{totalPriceDiscount}/-</Text>
+              <Text as="p" className="real price" size="2">₹{totalPrice}/-</Text>
+            </div>
     </Box>
+    
   );
 }
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import filterToggle from "./store/filterToggle";
-import CartFooter from "./components/CartFooter";
+import SignUp from "./components/SignUp";
 import theme from "./store/theme";
 import "@radix-ui/themes/styles.css";
 import {
@@ -113,8 +113,8 @@ function App() {
           <div className="sm:col-span-12 md:col-span-9 lg:col-span-10">
             <Products selectedValues={selectedValues} rangeRadio={rangeRadio} />
           </div>
+        <SignUp />
         </div>
-        <CartFooter />
         
       </Theme>
     </>

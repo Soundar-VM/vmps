@@ -6,8 +6,11 @@ import categoryStore from "../store/categoryStore";
 import { MdClose } from "react-icons/md";
 import { Grid, Card, Box, Flex, TextField } from "@radix-ui/themes";
 import cartToggle from "../store/cartToggle";
+import { GrCart } from "react-icons/gr";
+import signUpToggle from "../store/signUpToggle";
 
 function Cart() {
+  const { signUpStatus,signUpStatusToggle } = signUpToggle();
   const { categories, fetchCategories } = categoryStore();
   const { cartStatus, cartStatusToggle } = cartToggle();
   const { products, fetchProducts } = productStore();
@@ -32,8 +35,8 @@ function Cart() {
   }, [cart, products]);
 
   useEffect(() => {
-    const total = cartItems.reduce((acc, item) => acc + (item.price * item.quantity)-(item.quantity * (item.price*(item.discount/100))), 0);
-    const totalDiscount = cartItems.reduce((acc, item) => acc + ((item.price * item.quantity) + (item.quantity * (item.price*(item.discount/100))))-(item.price*item.quantity) , 0);
+    const total = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const totalDiscount = cartItems.reduce((acc, item) => acc - ((item.price * item.quantity) - (item.quantity * (item.mrp))) , 0);
     setTotalPrice(total);
     setTotalPriceDiscount(totalDiscount);
   }, [cartItems]);
@@ -45,6 +48,12 @@ function Cart() {
         <h1  className="font-bold">Cart</h1>
       </div>
       <div style={{position:"sticky",top:"0px",overflowY:"scroll",height:"80vh",paddingBottom:'50px'}} className="px-2 pt-0">
+      {(cartItems.length === 0) && 
+      <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",display:"flex",flexDirection:"column",alignItems:"center"}}>
+      <GrCart  className="mb-3"/>
+      <Text as="p" className="text-center">Cart is empty</Text>
+      </div>
+      }
       {categories
         .filter((category) => cartItems.some((product) => product.cat_id === category.id))
         .map((category) => {
@@ -69,13 +78,13 @@ function Cart() {
                       </Text>
                       <Flex className="mt-2">
                         <Text as="span" className="strike price">
-                          MRP ₹{product.price}/-
+                          MRP ₹{product.mrp}/-
                         </Text>
                         <Text as="p" className="real price" size="2">
-                        ₹{Math.ceil(product.price - (product.price *(product.discount/100)))}/-
+                        ₹{product.price}/-
                         </Text>
                         <Text as="p" className="sub-total" size="2">
-                          ₹{product.quantity * Math.ceil(product.price - (product.price *(product.discount/100)))}/-
+                          ₹{product.quantity * product.price}/-
                         </Text>
                       </Flex>
                       <Flex className="mt-3 control">
@@ -101,7 +110,7 @@ function Cart() {
                           variant="soft"
                           className="cursor-pointer"
                           color="green"
-                          onClick={() => addToCart(product.id, product.quantity + 1)}
+                          onClick={() => addToCart(product.id, product.cat_id)}
                         >
                           +
                         </Button>
@@ -116,9 +125,9 @@ function Cart() {
         </div>
         <div className="fixed bottom-0 w-100">
               <p className="text-center bg-white text-black py-1">You saved <span className="text-[13px] text-red-700">₹{totalPriceDiscount}/-</span></p>
-          <div className="flex justify-between">
-              <button className="bg-[#0090ff] text-white-900 py-3 px-1 font-bold w-50 border-r-2 text-[20px]">Checkout</button>
-              <p className="bg-green-600 text-white-900 py-3 px-1 font-bold w-50 text-center">Total<br/><span class="pt-3">₹{totalPrice}/-</span></p>
+              <div className="flex justify-between">
+              <button className="bg-[#0090ff] text-white-900  font-bold w-50 border-r-2 text-[18px]" onClick={signUpStatusToggle}>Checkout</button>
+              <p className="bg-green-600 text-white-900 font-bold w-50 text-center" style={{lineHeight:"35px"}}>Total <span>₹{totalPrice}/-</span></p>
 
           </div>
         </div>
