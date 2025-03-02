@@ -104,7 +104,7 @@ function Cart() {
                             const newQuantity = Math.max(1, parseInt(e.target.value, 10) || 1);
                             addToCart(product.id, newQuantity);
                           }}
-                          style={{ width: "40px", textAlign: "center" }}
+                          style={{ width: "40px", textAlign: "start" }}
                         />
                         <Button
                           variant="soft"
