@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { GrLinkPrevious } from "react-icons/gr";
 import OtpInput from "react-otp-input";
 import { Tabs } from "radix-ui";
-import "./SignUp.css";
+import "./signup.css";
 import signUpToggle from "../store/signUpToggle";
 
 function SignUp() {
