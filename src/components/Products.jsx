@@ -51,7 +51,7 @@ function Products({ rangeRadio, selectedValues }) {
 
 useEffect(() => {
   const fetchData = async () => {
-    setLoading(true);
+    setLoading(false);
     await fetchProducts();
     await fetchCategories();
     setLoading(true);
@@ -199,7 +199,7 @@ useEffect(() => {
 </div>
 
 
-      {loading && <Spinner loading={loading} size="3" className="fixed top-50 left-50" />}
+      {loading && <Spinner loading={loading} size="3" style={{left:"50%",top:"50%",position:"fixed"}} />}
       <div className='flex md:hidden fixed bottom-0 z-8 w-full justify-between items-center' style={{background:"#000",width:"100%",padding:"10px",borderTop:"1px solid #ccc"}}>
               <Button onClick={()=>cartStatusToggle()}> View Cart</Button>
               <Text as="p" className="real price" size="1">you saved ₹{totalPriceDiscount}/-</Text>

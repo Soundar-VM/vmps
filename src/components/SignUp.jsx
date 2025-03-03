@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { GiCheckMark } from "react-icons/gi";
 import { useForm } from "react-hook-form";
 import { GrLinkPrevious } from "react-icons/gr";
 import OtpInput from "react-otp-input";
@@ -9,43 +10,79 @@ import signUpToggle from "../store/signUpToggle";
 
 function SignUp() {
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [emailSet, setEmailSet] = useState(false);
+  const [otpHide, setOtpHide] = useState(true);
   const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpError, setOtpError] = useState("");
   const { signUpStatus, signUpStatusToggle } = signUpToggle();
+  const [countDownTime, setCountDownTime] = useState({
+    minutes: 0,
+    seconds: 0,
+  });
+  const [isCounting, setIsCounting] = useState(false);
 
-  const [countDownTime, setCountDownTime] = useState({ minutes: 0, seconds: 0 });
-  const [otpExpireTime, setOtpExpireTime] = useState(null);
-  const intervalRef = useRef(null);
-
-  const updateCountdown = useCallback(() => {
-    if (!otpExpireTime) return;
-
-    const now = new Date().getTime();
-    const timeDifference = otpExpireTime - now;
-
-    if (timeDifference <= 0) {
-      clearInterval(intervalRef.current);
-    //   setCountDownTime({ minutes: 0, seconds: 0 });
-      setEmailSet(false);
-      setEmail('');
-      return;
-    }
-
-    setCountDownTime({
-      minutes: Math.floor((timeDifference / 1000 / 60) % 60),
-      seconds: Math.floor((timeDifference / 1000) % 60),
-    });
-  }, [otpExpireTime]);
+  const otpResponse = async () => {
+    await axios
+      .post("https://myhitech.digitalmantraaz.com/api/verfiy-otp", {
+        email,
+        otp,
+      })
+      .then((otp) => {
+        console.log(otp);
+        setEmailSet(true);
+        setOtpHide(true)
+        
+        if(otp.status==200){
+          console.log("helllo");
+          
+        }
+        setOtpError(otp.data.message);
+      })
+      .catch((error) => {
+        console.log("Error verifying OTP:", error);
+        setOtpError(error.response.data.message);
+      });
+  };
 
   useEffect(() => {
-    if (!otpExpireTime) return;
+    if (otp.length == 6) {
+      setOtpSent(true);
+      setOtpError("please wait...");
+      otpResponse();
+    } else {
+      setOtpError("");
+      setOtpSent(false);
+    }
+  }, [otp]);
 
-    intervalRef.current = setInterval(updateCountdown, 1000);
-    return () => clearInterval(intervalRef.current);
-  }, [otpExpireTime, updateCountdown]);
+  useEffect(() => {
+    if (!isCounting) return;
+
+    const interval = setInterval(() => {
+      setCountDownTime((prevTime) => {
+        if (prevTime.minutes === 0 && prevTime.seconds === 0) {
+          clearInterval(interval);
+          setIsCounting(false);
+          setEmailSet(false);
+          return { minutes: 0, seconds: 0 };
+        }
+
+        const newSeconds = prevTime.seconds === 0 ? 59 : prevTime.seconds - 1;
+        const newMinutes =
+          prevTime.seconds === 0 ? prevTime.minutes - 1 : prevTime.minutes;
+
+        return { minutes: newMinutes, seconds: newSeconds };
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isCounting]);
 
   async function sendVerifyCode() {
-    setEmailSet(true);
+    setOtp("");
+    setOtpSent("");
     try {
       const response = await axios.post(
         "https://myhitech.digitalmantraaz.com/api/verfiy-mail",
@@ -54,14 +91,17 @@ function SignUp() {
       const responseData = response.data;
 
       if (responseData.success) {
-        const expireTime = new Date().getTime() + 10 * 1000; // 1 minute countdown
-        setOtpExpireTime(expireTime);
+        setCountDownTime({ minutes: 0, seconds: 10 });
+        setIsCounting(true);
+        setEmailSet(true);
+        setOtpHide(false);
+        setEmailError("");
       } else {
         setEmailSet(false);
+        setEmailError(responseData.message);
       }
     } catch (error) {
-      console.error("Error sending OTP:", error);
-      setEmailSet(false);
+      setEmailError(error.response.data.message);
     }
   }
 
@@ -69,129 +109,144 @@ function SignUp() {
     register,
     handleSubmit,
     formState: { errors },
+    watch
   } = useForm();
+
+
+  const onSubmit = (data) => console.log(data)
+
+  console.log(watch("example")) 
+
 
   return (
     <div
-      className="py-2 fixed top-16 right-0 h-full bg-black w-100 z-3"
+      className="p-5 fixed top-16 right-0 h-full bg-black w-100 z-3"
       style={{ display: signUpStatus ? "block" : "none" }}
     >
-      <div className="flex justify-between py-2 mb-2 px-5">
+      <div className="flex justify-between mb-2">
         <button onClick={signUpStatusToggle}>
           <GrLinkPrevious />
         </button>
-        <h3>Signup</h3>
+        <h1 className="text-[20px] mb-5">Register</h1>
       </div>
 
-      <Tabs.Root className="TabsRoot" defaultValue="tab1">
-        <Tabs.Content className="TabsContent" value="tab1">
-          <h1 className="text-[22px] mb-5">Contact Details</h1>
+      {/* <h1 className="text-[22px] mb-5">Contact Details</h1> */}
+<form action="" onSubmit={handleSubmit(onSubmit)}>
+        {/* <label htmlFor="name" className="pb-2 block">
+        Name
+        </label> */}
+        <input placeholder="Name" id="name" {...register("name",{ required: true })} />
+        {errors.name && <span className="error">Name is manditory</span>}
 
-          <div className="p-3">
-            <label htmlFor="username" className="pb-2 block">
-              Username
-            </label>
-            <input placeholder="Username" id="username" {...register("username")} />
-            {errors.username && <span>This field is required</span>}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            {/* <label htmlFor="phone1" className="pb-2 block">
+              Phone Number
+            </label> */}
+            <input placeholder="Phone Number *" id="phone1" {...register("phone1",{ required: true })} />
+          </div>
+          <div>
+            {/* <label htmlFor="phone2" className="pb-2 block">
+              Alternate No
+            </label> */}
+            <input placeholder="Phone Number" id="phone2" {...register("phone2",{ required: true })} />
+          </div>
+        </div>
+        {errors.phone1 && <span className="error">* Phone Number is manditory</span>}
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="phone1" className="pb-2 block">
-                  Phone Number
-                </label>
-                <input placeholder="" id="phone1" {...register("phone1")} />
-              </div>
-              <div>
-                <label htmlFor="phone2" className="pb-2 block">
-                  Alternate No
-                </label>
-                <input placeholder="" id="phone2" {...register("phone2")} />
-              </div>
-            </div>
-            {errors.phone1 && <span>This field is required</span>}
-
-            <label>Email ID</label>
-            <div>
-              <div className="flex rounded-lg shadow-sm">
+        {/* <label>Email ID</label> */}
+        <div>
+          <div className="flex shadow-sm">
+            <input
+              type="text"
+              placeholder="Email ID"
+              disabled={emailSet}
+              {...register("email",{ required: true })}
+              className="block w-full !border-e-0 !rounded-tr-none !rounded-br-none"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+            />
+            <button
+              type="button"
+              disabled={emailSet}
+              className={`px-2 bg-${otpError ? "red" : "blue"}-600 text-white hover:bg-${otpError ? "blue" : "red"}-700 disabled:opacity-50 h-[36px]`}
+              onClick={sendVerifyCode}
+            >
+              {otpError?<GiCheckMark />:"Verify"}
+            </button>
+          </div>
+          {errors.email && <span className="error">Email is manditory</span>}
+        </div>
+        {/* {errors.email && <span className="error">Email is required</span>} */}
+        <span className="text-start !mb-0 text-red-500 font-bold">{emailError}</span>
+        <p className="text-start mb-1 text-green-600" style={{ display: isCounting ? "block" : "none" }}>
+          OTP has been sent (Resend OTP in {countDownTime.minutes}:
+          {countDownTime.seconds < 10
+            ? `0${countDownTime.seconds}`
+            : countDownTime.seconds}
+          )
+        </p>
+        {otpHide ? (
+          ""
+        ) : (
+          <div className="mt-0">
+            <OtpInput
+              value={otp}
+              onChange={setOtp}
+              numInputs={6}
+              containerStyle={{ justifyContent: "center" }}
+              renderSeparator={<span className="error">&nbsp;&nbsp;</span>}
+              renderInput={(props) => (
                 <input
-                  type="text"
-                  placeholder="email"
-                  disabled={emailSet}
-                  {...register("email")}
-                  className="block w-full !border-e-0 !rounded-tr-none !rounded-br-none"
-                  onChange={(e) => setEmail(e.target.value)}
-                  value={email}
+                  {...props}
+                  style={{ width: "2rem", textAlign: "center" }}
+                  type="number"
                 />
-                <button
-                  type="button"
-                  disabled={emailSet}
-                  className="p-2 bg-blue-600 text-white rounded-e-md hover:bg-blue-700 disabled:opacity-50"
-                  onClick={sendVerifyCode}
-                >
-                  Verify
-                </button>
-              </div>
-            </div>
-            {errors.email && <span>This field is required</span>}
-
-            {emailSet && (
-              <div>
-                <p className="text-end mb-1 text-green-600">
-                  OTP has been sent (expires in {countDownTime.minutes}:{countDownTime.seconds})
-                </p>
-                <OtpInput
-                  value={otp}
-                  onChange={setOtp}
-                  numInputs={6}
-                  renderSeparator={<span>&nbsp;&nbsp;</span>}
-                  renderInput={(props) => (
-                    <input {...props} style={{ width: "2rem", textAlign: "center" }} />
-                  )}
-                />
-              </div>
-            )}
+              )}
+            />
+            <p className="text-center text-green-600 text-[15px]">
+              {otpSent ? "" : "Enter OTP"}
+            </p>
           </div>
-        </Tabs.Content>
+        )}
+        <p className="text-center text-yellow-600 text-[15px]">{otpError}</p>
+        {/* <hr className="my-5"/> */}
+      {/* <h1 className="text-[22px] mb-5">Contact Details</h1> */}
 
-        <Tabs.Content className="TabsContent" value="tab2">
-          <p className="Text">Address Details</p>
+      {/* <label htmlFor="address1" className="pb-2 block">
+        Address
+      </label> */}
+      <textarea id="address" placeholder="Address" {...register("address", { required: "Address is Manditory" })}></textarea>
+      {errors.address && <span className="error">Address is required</span>}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          {/* <label htmlFor="pincode" className="pb-2 block">
+            Pincode
+          </label> */}
+          <input id="pincode" placeholder="Pincode" {...register("pincode",{ required: true })} />
+          {errors.pincode && <span className="error">Pincode is required</span>}
+        </div>
+        <div>
+          {/* <label htmlFor="country" className="pb-2 block">
+            State
+          </label> */}
+          <input id="State" placeholder="State" {...register("State",{ required: true })} />
+          {errors.State && <span className="error">State is required</span>}
+        </div>
+      </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="pincode" className="pb-2 block">
-                Pincode
-              </label>
-              <input id="pincode" {...register("pincode")} />
-              {errors.pincode && <span>Pincode is required</span>}
-            </div>
-            <div>
-              <label htmlFor="country" className="pb-2 block">
-                Country
-              </label>
-              <input id="country" {...register("country")} />
-              {errors.country && <span>Country is required</span>}
-            </div>
-          </div>
-
-          <label htmlFor="address1" className="pb-2 block">
-            Permanent Address
-          </label>
-          <textarea id="address1" {...register("address1")}></textarea>
-
-          <div style={{ display: "flex", marginTop: 20, justifyContent: "flex-end" }}>
-            <button className="Button green">Submit</button>
-          </div>
-        </Tabs.Content>
-
-        <Tabs.List className="TabsList">
-          <Tabs.Trigger className="TabsTrigger" value="tab1">
-            Account
-          </Tabs.Trigger>
-          <Tabs.Trigger className="TabsTrigger" value="tab2">
-            Password
-          </Tabs.Trigger>
-        </Tabs.List>
-      </Tabs.Root>
+      <div
+        style={{
+          display: "flex",
+          marginTop: 20,
+          justifyContent: "center",
+        }}
+      >
+       
+        <button className="bg-green-600 px-3 py-2 green" style={{borderRadius:"none"}} type="submit">Register</button>
+      </div>
+      </form>
+        <p className="text-center mt-4 text-gray-500">Already have account? / <span className="text-green-500">Login Here</span></p>
     </div>
   );
 }

@@ -26,7 +26,8 @@ function App() {
 
   useEffect(() => {
     const cookies = new Cookies(null, { path: "/" });
-    const userCookie = crypto.randomUUID();
+    // const userCookie = crypto.randomUUID();
+    const userCookie = "1212412";
     // console.log(userCookie);
 
     if (cookies.get("userCookie")) {

@@ -14,7 +14,7 @@ function Navbar() {
     <>
         <div className="flex justify-between p-5 sticky top-0 w-full z-10" style={{background:"rgb(0 144 255)"}}>
             <div className="logo">
-                <h2>VMPS Crackers</h2>
+                <h2>Test</h2>
             </div>
             
 

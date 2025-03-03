@@ -7,6 +7,7 @@ import { MdClose } from "react-icons/md";
 import { Grid, Card, Box, Flex, TextField } from "@radix-ui/themes";
 import cartToggle from "../store/cartToggle";
 import { GrCart } from "react-icons/gr";
+import { GrLinkPrevious } from "react-icons/gr";
 import signUpToggle from "../store/signUpToggle";
 
 function Cart() {
@@ -44,14 +45,17 @@ function Cart() {
   return (
     <div className="fixed right-0 w-100 h-full bg-black z-1 shadow-lg" style={{paddingBottom:"100px",display:cartStatus?"block":"none"}}>
       <div className="flex justify-between py-5 px-5" style={{width:"100%"}}>
-        <button className="text-white-950 cursor-pointer" onClick={()=>cartStatusToggle()}><MdClose style={{color:"white"}}/></button>
+        <button className="text-white-950 cursor-pointer" onClick={()=>cartStatusToggle()}><GrLinkPrevious style={{color:"white"}}/></button>
         <h1  className="font-bold">Cart</h1>
       </div>
       <div style={{position:"sticky",top:"0px",overflowY:"scroll",height:"80vh",paddingBottom:'50px'}} className="px-2 pt-0">
       {(cartItems.length === 0) && 
       <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",display:"flex",flexDirection:"column",alignItems:"center"}}>
-      <GrCart  className="mb-3"/>
-      <Text as="p" className="text-center">Cart is empty</Text>
+      <GrCart  className="mb-3" size="70"/>
+      <Text as="p" className="text-center"><b>Your Cart is empty</b></Text>
+      <div className="flex justify-center mt-4">
+        <button className="bg-green-500 px-4 py-2 text-black" onClick={()=>cartStatusToggle()}><b>Purchase</b></button>
+      </div>
       </div>
       }
       {categories
