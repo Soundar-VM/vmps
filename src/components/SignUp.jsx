@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import {
+  Spinner,
+} from "@radix-ui/themes";
 import { GiCheckMark } from "react-icons/gi";
 import { useForm } from "react-hook-form";
 import { GrLinkPrevious } from "react-icons/gr";
@@ -7,16 +10,24 @@ import OtpInput from "react-otp-input";
 import { Tabs } from "radix-ui";
 import "./signup.css";
 import signUpToggle from "../store/signUpToggle";
+import loginOffcanvas from "../store/loginOffcanvas";
+import cartToggle from "../store/cartToggle";
+import Cookies from "universal-cookie";
 
 function SignUp() {
+  const {signUpStatus, signUpStatusToggle } = signUpToggle();
+  const {cartStatus,cartStatusToggle}= cartToggle();
+  const {loginOffcanvasStatus,loginOffcanvasStatusToggle}= loginOffcanvas();
+  const [otp, setOtp] = useState("");
+  const [emailVerified,setEmailVerified] = useState(false);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [otpError, setOtpError] = useState("");
+  const [verifyButtonContent,setVerifyButtonContent]=useState("verify");
   const [emailSet, setEmailSet] = useState(false);
   const [otpHide, setOtpHide] = useState(true);
-  const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-  const [otpError, setOtpError] = useState("");
-  const { signUpStatus, signUpStatusToggle } = signUpToggle();
+  
   const [countDownTime, setCountDownTime] = useState({
     minutes: 0,
     seconds: 0,
@@ -36,7 +47,8 @@ function SignUp() {
         
         if(otp.status==200){
           console.log("helllo");
-          
+          setEmailVerified(true);
+          setVerifyButtonContent(<GiCheckMark />);
         }
         setOtpError(otp.data.message);
       })
@@ -66,6 +78,7 @@ function SignUp() {
           clearInterval(interval);
           setIsCounting(false);
           setEmailSet(false);
+          setVerifyButtonContent("Verify")
           return { minutes: 0, seconds: 0 };
         }
 
@@ -81,6 +94,7 @@ function SignUp() {
   }, [isCounting]);
 
   async function sendVerifyCode() {
+    setVerifyButtonContent(<Spinner size="3" />)
     setOtp("");
     setOtpSent("");
     try {
@@ -96,12 +110,14 @@ function SignUp() {
         setEmailSet(true);
         setOtpHide(false);
         setEmailError("");
+        errors.email="";
       } else {
         setEmailSet(false);
         setEmailError(responseData.message);
       }
     } catch (error) {
       setEmailError(error.response.data.message);
+      setVerifyButtonContent("verify");
     }
   }
 
@@ -113,7 +129,32 @@ function SignUp() {
   } = useForm();
 
 
-  const onSubmit = (data) => console.log(data)
+  const onSubmit = async (data) =>{
+    console.log(emailVerified);
+    console.log(data);
+    
+    if(emailVerified){
+      await axios.post("https://myhitech.digitalmantraaz.com/api/register",data)
+     .then(response=>{
+       console.log(response);
+      
+        const cookies = new Cookies(null, { path: "/" });
+        // const userCookie = crypto.randomUUID();
+        const userCookieEmail = data.email;
+        console.log(userCookieEmail);
+    
+        if (cookies.get("userCookie")) {
+          console.log(cookies.get("userCookie"));
+        } else {
+          cookies.set("userCookie", userCookie);
+        }
+       
+     })
+     .catch(error=>{
+       console.error(error);
+     })
+    }
+  }
 
   console.log(watch("example")) 
 
@@ -143,16 +184,16 @@ function SignUp() {
             {/* <label htmlFor="phone1" className="pb-2 block">
               Phone Number
             </label> */}
-            <input placeholder="Phone Number *" id="phone1" {...register("phone1",{ required: true })} />
+            <input placeholder="Phone Number *" id="phone1" {...register("phone",{ required: true ,pattern:"/^\d{0,10}$/"})} />
           </div>
           <div>
             {/* <label htmlFor="phone2" className="pb-2 block">
               Alternate No
             </label> */}
-            <input placeholder="Phone Number" id="phone2" {...register("phone2",{ required: true })} />
+            <input placeholder="Alternate Number" id="phone2" {...register("altphone",{ required: true })} />
           </div>
         </div>
-        {errors.phone1 && <span className="error">* Phone Number is manditory</span>}
+        {errors.phone && <span className="error">* Phone Number is manditory</span>}
 
         {/* <label>Email ID</label> */}
         <div>
@@ -169,17 +210,20 @@ function SignUp() {
             <button
               type="button"
               disabled={emailSet}
-              className={`px-2 bg-${otpError ? "red" : "blue"}-600 text-white hover:bg-${otpError ? "blue" : "red"}-700 disabled:opacity-50 h-[36px]`}
+              className={`px-2 bg-green-600 text-white disabled:opacity-50 h-[36px]`}
               onClick={sendVerifyCode}
             >
-              {otpError?<GiCheckMark />:"Verify"}
+
+              {verifyButtonContent}
+              {/* {otpError?<GiCheckMark />:"Verify"}
+              {loading && <Spinner loading={loading} size="3" />} */}
             </button>
           </div>
-          {errors.email && <span className="error">Email is manditory</span>}
+          {/* {errors.email && <span className="error">Email is manditory</span>} */}
         </div>
         {/* {errors.email && <span className="error">Email is required</span>} */}
         <span className="text-start !mb-0 text-red-500 font-bold">{emailError}</span>
-        <p className="text-start mb-1 text-green-600" style={{ display: isCounting ? "block" : "none" }}>
+        <p className="text-center mb-1 text-green-600" style={{ display: isCounting ? "block" : "none" }}>
           OTP has been sent (Resend OTP in {countDownTime.minutes}:
           {countDownTime.seconds < 10
             ? `0${countDownTime.seconds}`
@@ -204,33 +248,33 @@ function SignUp() {
                 />
               )}
             />
-            <p className="text-center text-green-600 text-[15px]">
-              {otpSent ? "" : "Enter OTP"}
+            <p className="text-center text-green-600 mb-2 text-[15px]">
+              {otpSent ? "" : `Enter OTP (One Time Password)`}
             </p>
           </div>
         )}
-        <p className="text-center text-yellow-600 text-[15px]">{otpError}</p>
+        <p className="text-center text-green-600 text-[15px]">{otpError}</p>
         {/* <hr className="my-5"/> */}
       {/* <h1 className="text-[22px] mb-5">Contact Details</h1> */}
 
       {/* <label htmlFor="address1" className="pb-2 block">
         Address
       </label> */}
-      <textarea id="address" placeholder="Address" {...register("address", { required: "Address is Manditory" })}></textarea>
+      <textarea id="address" placeholder="Delivery Address" {...register("address", { required: "Address is Manditory" })}></textarea>
       {errors.address && <span className="error">Address is required</span>}
       <div className="grid grid-cols-2 gap-4">
         <div>
           {/* <label htmlFor="pincode" className="pb-2 block">
             Pincode
           </label> */}
-          <input id="pincode" placeholder="Pincode" {...register("pincode",{ required: true })} />
+          <input id="pincode" type="number" placeholder="Delivery Pincode" {...register("pincode",{ required: true })} />
           {errors.pincode && <span className="error">Pincode is required</span>}
         </div>
         <div>
           {/* <label htmlFor="country" className="pb-2 block">
             State
           </label> */}
-          <input id="State" placeholder="State" {...register("State",{ required: true })} />
+          <input id="State" type="text" placeholder="Delivery State" value="Tamil Nadu" {...register("state",{ required: true })} />
           {errors.State && <span className="error">State is required</span>}
         </div>
       </div>
@@ -246,7 +290,7 @@ function SignUp() {
         <button className="bg-green-600 px-3 py-2 green" style={{borderRadius:"none"}} type="submit">Register</button>
       </div>
       </form>
-        <p className="text-center mt-4 text-gray-500">Already have account? / <span className="text-green-500">Login Here</span></p>
+        <p className="text-center mt-4 text-gray-500" onClick={()=>{loginOffcanvasStatusToggle();signUpStatusToggle()}}>Already have account? / <span className="text-green-500">Login Here</span></p>
     </div>
   );
 }

@@ -15,6 +15,7 @@ import productStore from "../store/productsStore";
 import cartStore from "../store/cartStore";
 import categoryStore from "../store/categoryStore";
 import cartToggle from "../store/cartToggle";
+import bg from '../assets/bg.jpg'
 
 
 function Products({ rangeRadio, selectedValues }) {
@@ -108,6 +109,7 @@ useEffect(() => {
         tabView={view}
       />
       <div>
+      <img src={bg} alt="" className="w-full" style={{maxHeight:"350px",objectFit:"cover",objectPosition:"bottom center"}} />
       {categories
     .filter((category) => 
       filteredProducts.some((product) => product.cat_id === category.id) // ✅ Only keep categories with products

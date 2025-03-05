@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import filterToggle from "./store/filterToggle";
 import SignUp from "./components/SignUp";
+import Login from "./components/Login";
 import theme from "./store/theme";
+
 import "@radix-ui/themes/styles.css";
 import {
   Theme,
@@ -28,7 +30,7 @@ function App() {
     const cookies = new Cookies(null, { path: "/" });
     // const userCookie = crypto.randomUUID();
     const userCookie = "1212412";
-    // console.log(userCookie);
+    console.log(userCookie);
 
     if (cookies.get("userCookie")) {
       console.log(cookies.get("userCookie"));
@@ -71,6 +73,7 @@ function App() {
         appearance={themeStatus}
       >
         <Navbar />
+       
         <Cart/>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sticky top-0">
           <div
@@ -115,6 +118,7 @@ function App() {
             <Products selectedValues={selectedValues} rangeRadio={rangeRadio} />
           </div>
         <SignUp />
+        <Login/>
         </div>
         
       </Theme>
