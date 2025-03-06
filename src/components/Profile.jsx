@@ -1,6 +1,6 @@
 import React from "react";
 import { GrLinkPrevious } from "react-icons/gr";
-import profileToggle from "../store/ProfileToggle";
+import profileToggle from "../store/profileToggle.js";
 
 function Profile() {
     const {profileStatus,toggleProfileStatus}= profileToggle();
