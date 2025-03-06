@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import theme from "./store/theme";
 
 import "@radix-ui/themes/styles.css";
+import Profile from "./components/Profile";
 import {
   Theme,
   CheckboxGroup,
@@ -26,18 +27,18 @@ function App() {
   const [selectedValues, setSelectedValues] = useState([]);
   const [rangeRadio, setRange] = useState("0");
 
-  useEffect(() => {
-    const cookies = new Cookies(null, { path: "/" });
-    // const userCookie = crypto.randomUUID();
-    const userCookie = "1212412";
-    console.log(userCookie);
+  // useEffect(() => {
+  //   const cookies = new Cookies(null, { path: "/" });
+  //   const userCookie = crypto.randomUUID();
+    
+  //   console.log(userCookie);
 
-    if (cookies.get("userCookie")) {
-      console.log(cookies.get("userCookie"));
-    } else {
-      cookies.set("userCookie", userCookie);
-    }
-  }, []);
+  //   if (cookies.get("userCookie")) {
+  //     console.log(cookies.get("userCookie"));
+  //   } else {
+  //     cookies.set("userCookie", userCookie);
+  //   }
+  // }, []);
 
   useEffect(() => {
     console.log("Updated selectedValues:", selectedValues);
@@ -73,7 +74,7 @@ function App() {
         appearance={themeStatus}
       >
         <Navbar />
-       
+        
         <Cart/>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sticky top-0">
           <div
@@ -118,6 +119,7 @@ function App() {
             <Products selectedValues={selectedValues} rangeRadio={rangeRadio} />
           </div>
         <SignUp />
+        <Profile/>
         <Login/>
         </div>
         

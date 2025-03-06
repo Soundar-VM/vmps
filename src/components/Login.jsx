@@ -12,12 +12,14 @@ import signUpToggle from "../store/signUpToggle";
 import loginOffcanvas from "../store/loginOffcanvas";
 import cartToggle from "../store/cartToggle";
 import Cookies from "universal-cookie";
+import userLoginStatus from "../store/userLoginStatus";
 
 
   
 
 
 function Login() {
+    const {loginStatus,setLogin,setLoginStatus}= userLoginStatus();
     const {loginOffcanvasStatus,loginOffcanvasStatusToggle}=loginOffcanvas();
     const [otp, setOtp] = useState("");
     const [email, setEmail] = useState("");
@@ -43,20 +45,29 @@ function Login() {
         .then((otp) => {
           console.log(otp);
           setEmailSet(true);
-          setOtpHide(true)
+          setOtpHide(true);
           
-          if(otp.status==200){
+          console.log("OTP success",otp.data.success);
+          if(otp.data.success){
+            setOtpError(otp.data.message);
+            setEmail("");
+            setEmailError("");
+            setLogin(email);
+            setLoginStatus();
+            console.log(loginStatus);
+            
+            
 
 
-            const cookies = new Cookies(null, { path: "/" });
-            const userCookieEmail = data.email;
-            console.log(userCookieEmail);
-        
-            if (cookies.get("userCookie")) {
-              console.log(cookies.get("userCookie"));
-            } else {
-              cookies.set("userCookie", userCookie);
-            }
+            const loginCookie = new Cookies(null, { path: "/" });
+                    const userCookieEmail = email;
+                    console.log(userCookieEmail);
+                
+                    if (loginCookie.get("userCookieEmail")) {
+                      return;
+                    } else {
+                      loginCookie.set("userCookieEmail", userCookieEmail);
+                    }
 
 
             setVerifyButtonContent(<GiCheckMark />);
@@ -89,7 +100,7 @@ function Login() {
             clearInterval(interval);
             setIsCounting(false);
             setEmailSet(false);
-            setVerifyButtonContent("Verify")
+            setVerifyButtonContent("Verify");
             return { minutes: 0, seconds: 0 };
           }
   
@@ -131,24 +142,11 @@ function Login() {
         setVerifyButtonContent("verify");
       }
     }
-  
-    const {
-      register,
-      handleSubmit,
-      formState: { errors },
-      watch
-    } = useForm();
-  
-  
-    const onSubmit = (data) => {
-      
-    }
-  
-    console.log(watch("example"))
+   
   return (
     <div>
          <div
-      className="p-5 fixed top-16 right-0 h-full bg-black w-100 z-3"
+      className="p-5 fixed top-16 right-0 h-full bg-black w-100 z-9"
       style={{ display: loginOffcanvasStatus ? "block" : "none" }}
     >
       <div className="flex justify-between mb-2">
@@ -158,8 +156,7 @@ function Login() {
         <h1 className="text-[20px] mb-5">Login</h1>
       </div>
 
-      {/* <h1 className="text-[22px] mb-5">Contact Details</h1> */}
-<form action="" onSubmit={handleSubmit(onSubmit)}>
+
        
         <div>
           <div className="flex shadow-sm">
@@ -167,10 +164,10 @@ function Login() {
               type="text"
               placeholder="Email ID"
               disabled={emailSet}
-              {...register("email",{ required: true })}
               className="block w-full !border-e-0 !rounded-tr-none !rounded-br-none"
-              onChange={(e) => setEmail(e.target.value)}
               value={email}
+              onChange={(e)=>setEmail(e.target.value)}
+             
             />
             <button
               type="button"
@@ -213,7 +210,7 @@ function Login() {
             </p>
           </div>
         )}
-        <p className="text-center text-yellow-600 text-[15px]">{otpError}</p>
+        <p className="text-center text-green-600 text-[15px]">{otpError}</p>
        
 
       <div
@@ -224,9 +221,8 @@ function Login() {
         }}
       >
        
-        <button className="bg-green-600 px-3 py-2 green" style={{borderRadius:"none"}} type="submit">Login</button>
+        {/* <button className="bg-green-600 px-3 py-2 green" style={{borderRadius:"none"}} type="submit">Login</button> */}
       </div>
-      </form>
         <p className="text-center mt-4 text-gray-500" onClick={()=>{signUpStatusToggle();loginOffcanvasStatusToggle()}}>Dont have account? / <span className="text-green-500">Register</span></p>
     </div>
     </div>

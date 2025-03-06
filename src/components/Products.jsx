@@ -10,6 +10,7 @@ import {
   Grid,
   Spinner,
 } from "@radix-ui/themes";
+import { toast } from 'react-toastify';
 import FilterBox from "./FilterBox";
 import productStore from "../store/productsStore";
 import cartStore from "../store/cartStore";
@@ -112,7 +113,7 @@ useEffect(() => {
       <img src={bg} alt="" className="w-full" style={{maxHeight:"350px",objectFit:"cover",objectPosition:"bottom center"}} />
       {categories
     .filter((category) => 
-      filteredProducts.some((product) => product.cat_id === category.id) // ✅ Only keep categories with products
+      filteredProducts.some((product) => product.cat_id === category.id) 
     )
     .map((category) => {
       // Get products belonging to this category
@@ -165,7 +166,8 @@ useEffect(() => {
                         variant="soft"
                         className="cursor-pointer"
                         color="red"
-                        onClick={() => removeSingle(product.id)}
+                        onClick={() => {toast.warn(`${product.title} from cart`,{position: "bottom-center",
+                          autoClose: 1000});removeSingle(product.id)}}
                         disabled={quantity === 0}
                       >   -
                       </Button>
@@ -173,10 +175,10 @@ useEffect(() => {
                       <TextField.Root
                         className="rounded-none"
                         value={quantity}
-                        onChange={(e) => {
-                          const newQuantity = Math.max(1, parseInt(e.target.value, 10) || 1);
-                          addToCart(product.id,product.cat_id, newQuantity);
-                        }}
+                        // onChange={(e) => {
+                        //   addToCart(product.id,product.cat_id);
+                        // }}
+                        disabled={true}
                         style={{ width: "40px", textAlign: "center" }}
                       />
 
@@ -184,7 +186,8 @@ useEffect(() => {
                       className="cursor-pointer"
                         variant="soft"
                         color="green"
-                        onClick={() => addToCart(product.id,product.cat_id)}
+                        onClick={() => {toast.success(`${product.title} is added in cart`,{position: "bottom-center",
+                          autoClose: 1000});addToCart(product.id,product.cat_id)}}
                       >
                         +
                       </Button>

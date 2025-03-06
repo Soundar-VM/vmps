@@ -5,10 +5,11 @@ import { BsCart } from "react-icons/bs";
 import theme from '../store/theme'
 import cartStore from '../store/cartStore';
 import cartToggle from "../store/cartToggle";
+import DropDown from './DropDown';
 
 function Navbar() {
-    const { cartStatus, cartStatusToggle } = cartToggle();
-  const {toggleTheme } = theme();
+  const { cartStatus, cartStatusToggle } = cartToggle();
+  const {setTheme } = theme();
   const {cart} = cartStore();
   return (
     <>
@@ -20,14 +21,16 @@ function Navbar() {
 
             <div className='flex relative'>   
                 
+              
                 <Flex style={{fontSize:"20px",marginRight:"30px",position:'relative'}} data-drawer-target="drawer-example" data-drawer-show="drawer-example" aria-controls="drawer-example">
                     <Text as="p" size="1" className='absolute qnt-show'>{cart.length}</Text>
-                    <button onClick={()=>cartStatusToggle()}><BsCart/></button>
+                    <button className='' onClick={()=>{(!cartStatus)?cartStatusToggle():null}}><BsCart/></button>
                 </Flex>
 
-            <Switch.Root className="SwitchRoot" onCheckedChange={toggleTheme} >
+            {/* <Switch.Root className="SwitchRoot" onCheckedChange={toggleTheme} >
                 <Switch.Thumb className="SwitchThumb" />
-            </Switch.Root>
+            </Switch.Root> */}
+            <DropDown/>
             </div>
 
         </div>

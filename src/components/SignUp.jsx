@@ -12,9 +12,13 @@ import "./signup.css";
 import signUpToggle from "../store/signUpToggle";
 import loginOffcanvas from "../store/loginOffcanvas";
 import cartToggle from "../store/cartToggle";
+import userLoginStatus from "../store/userLoginStatus";
 import Cookies from "universal-cookie";
+import { toast } from 'react-toastify';
+
 
 function SignUp() {
+  const {loginStatus,setLogin,setLoginStatus}= userLoginStatus();
   const {signUpStatus, signUpStatusToggle } = signUpToggle();
   const {cartStatus,cartStatusToggle}= cartToggle();
   const {loginOffcanvasStatus,loginOffcanvasStatusToggle}= loginOffcanvas();
@@ -46,14 +50,12 @@ function SignUp() {
         setOtpHide(true)
         
         if(otp.status==200){
-          console.log("helllo");
           setEmailVerified(true);
           setVerifyButtonContent(<GiCheckMark />);
         }
         setOtpError(otp.data.message);
       })
       .catch((error) => {
-        console.log("Error verifying OTP:", error);
         setOtpError(error.response.data.message);
       });
   };
@@ -70,6 +72,8 @@ function SignUp() {
   }, [otp]);
 
   useEffect(() => {
+    console.log(loginStatus);
+    
     if (!isCounting) return;
 
     const interval = setInterval(() => {
@@ -83,8 +87,7 @@ function SignUp() {
         }
 
         const newSeconds = prevTime.seconds === 0 ? 59 : prevTime.seconds - 1;
-        const newMinutes =
-          prevTime.seconds === 0 ? prevTime.minutes - 1 : prevTime.minutes;
+        const newMinutes = prevTime.seconds === 0 ? prevTime.minutes - 1 : prevTime.minutes;
 
         return { minutes: newMinutes, seconds: newSeconds };
       });
@@ -125,43 +128,51 @@ function SignUp() {
     register,
     handleSubmit,
     formState: { errors },
-    watch
+    reset
   } = useForm();
 
 
+  
   const onSubmit = async (data) =>{
-    console.log(emailVerified);
-    console.log(data);
+   
     
+
     if(emailVerified){
       await axios.post("https://myhitech.digitalmantraaz.com/api/register",data)
-     .then(response=>{
+      .then(response=>{
        console.log(response);
-      
-        const cookies = new Cookies(null, { path: "/" });
-        // const userCookie = crypto.randomUUID();
-        const userCookieEmail = data.email;
-        console.log(userCookieEmail);
-    
-        if (cookies.get("userCookie")) {
-          console.log(cookies.get("userCookie"));
-        } else {
-          cookies.set("userCookie", userCookie);
-        }
-       
+
+      if(response.data.status=="success"){
+        toast.warn("Success",{position: "bottom-center",autoClose: 1000})
+        setLogin(data.email);
+        setLoginStatus();
+          const loginCookie = new Cookies(null, { path: "/" });
+          const userCookieEmail = data.email;
+          
+          if (loginCookie.get("userCookieEmail")) {
+            return;
+          } else {
+            loginCookie.set("userCookieEmail", userCookieEmail);
+          }
+          reset();
+          signUpStatusToggle();
+          cartStatusToggle();
+
+      }
+
      })
      .catch(error=>{
-       console.error(error);
+      //  console.error(error);
      })
+    }else{
+      setEmailError("Please Verify your mail");
     }
   }
-
-  console.log(watch("example")) 
 
 
   return (
     <div
-      className="p-5 fixed top-16 right-0 h-full bg-black w-100 z-3"
+      className="p-5 fixed top-16 right-0 h-full bg-black w-100 z-9"
       style={{ display: signUpStatus ? "block" : "none" }}
     >
       <div className="flex justify-between mb-2">
@@ -190,7 +201,7 @@ function SignUp() {
             {/* <label htmlFor="phone2" className="pb-2 block">
               Alternate No
             </label> */}
-            <input placeholder="Alternate Number" id="phone2" {...register("altphone",{ required: true })} />
+            <input placeholder="Alternate Number" id="phone2" {...register("altphone")} />
           </div>
         </div>
         {errors.phone && <span className="error">* Phone Number is manditory</span>}

@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { Button, Text } from "@radix-ui/themes";
+import React, { useEffect, useState } from "react";import axios from "axios";
 import cartStore from "../store/cartStore";
 import productStore from "../store/productsStore";
 import categoryStore from "../store/categoryStore";
 import { MdClose } from "react-icons/md";
-import { Grid, Card, Box, Flex, TextField } from "@radix-ui/themes";
+import { Grid, Card, Box, Flex, TextField ,Spinner,Button, Text } from "@radix-ui/themes";
 import { GrCart } from "react-icons/gr";
 import { GrLinkPrevious } from "react-icons/gr";
 import signUpToggle from "../store/signUpToggle";
 import loginOffcanvas from "../store/loginOffcanvas";
 import cartToggle from "../store/cartToggle";
+import Cookies from "universal-cookie";
+import userLoginStatus from "../store/userLoginStatus";
+import Login from "./Login";
+import { toast } from 'react-toastify';
 
 function Cart() {
   const { signUpStatus,signUpStatusToggle } = signUpToggle();
@@ -21,6 +24,8 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalPriceDiscount, setTotalPriceDiscount] = useState(0);
+  const {loginStatus,loginUserEmail} =userLoginStatus();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -44,8 +49,29 @@ function Cart() {
     setTotalPriceDiscount(totalDiscount);
   }, [cartItems]);
 
+    const checkout =async()=>{
+      await axios.post('https://myhitech.digitalmantraaz.com/api/place-order',{cart,email:loginUserEmail})
+      .then(response =>console.log(response))
+      .catch(error=>console.log(error))
+    }
+
+  function handlePlaceOrder(){
+    console.log(loginStatus,loginUserEmail);
+    
+    if(loginStatus){
+      checkout();
+    }else{
+      cartStatusToggle();
+      loginOffcanvasStatusToggle();
+    }
+  }
   return (
     <div className="fixed right-0 w-100 h-full bg-black z-1 shadow-lg" style={{paddingBottom:"100px",display:cartStatus?"block":"none"}}>
+
+
+
+
+
       <div className="flex justify-between py-5 px-5" style={{width:"100%"}}>
         <button className="text-white-950 cursor-pointer" onClick={()=>{cartStatusToggle()}}><GrLinkPrevious style={{color:"white"}}/></button>
         <h1  className="font-bold">Cart</h1>
@@ -67,8 +93,9 @@ function Cart() {
           const categoryProducts = cartItems.filter((product) => product.cat_id === category.id);
 
           return (
-            <div key={category.id}>
-              <h2 className="my-5 py-2 ps-5  border-t-1 border-b-1 border-soild border-white bg-sky-900"><b>{category.title}</b></h2>
+            <div key={category.id} className="mb-5">
+              {/* <h2 className="my-5 py-2 ps-5  border-t-1 border-b-1 border-soild border-white bg-sky-900"><b>{category.title}</b></h2> */}
+              <h2 className="my-5"></h2>
               <Grid className="list-view" columns={{ initial: "1"}} gap="3">
                 {categoryProducts.map((product) => (
 
@@ -98,7 +125,8 @@ function Cart() {
                         className="cursor-pointer"
                           variant="soft"
                           color="red"
-                          onClick={() => removeSingle(product.id)}
+                          onClick={() => {toast.warn(`${product.title} is removed from cart`,{position: "bottom-center",
+                                                    autoClose: 1000});removeSingle(product.id)}}
                           disabled={product.quantity === 0}
                         >
                           -
@@ -106,17 +134,19 @@ function Cart() {
                         <TextField.Root
                           className="rounded-none"
                           value={product.quantity}
-                          onChange={(e) => {
-                            const newQuantity = Math.max(1, parseInt(e.target.value, 10) || 1);
-                            addToCart(product.id, newQuantity);
-                          }}
+                          // onChange={(e) => {
+                          //   const newQuantity = Math.max(1, parseInt(e.target.value, 10) || 1);
+                          //   addToCart(product.id, newQuantity);
+                          // }}
+                          disabled={true}
                           style={{ width: "40px", textAlign: "start" }}
                         />
                         <Button
                           variant="soft"
                           className="cursor-pointer"
                           color="green"
-                          onClick={() => addToCart(product.id, product.cat_id)}
+                          onClick={() => {toast.success(`${product.title} is added in cart`,{position: "bottom-center",
+                            autoClose: 1000});addToCart(product.id, product.cat_id)}}
                         >
                           +
                         </Button>
@@ -132,7 +162,7 @@ function Cart() {
         <div className="fixed bottom-0 w-100">
               <p className="text-center bg-white text-black py-1">You saved <span className="text-[13px] text-red-700">₹{totalPriceDiscount}/-</span></p>
               <div className="flex justify-between">
-              <button className="bg-[#0090ff] text-white-900  font-bold w-50 border-r-2 text-[18px]" onClick={()=>{cartStatusToggle(),loginOffcanvasStatusToggle()}}>Place order</button>
+              <button className="bg-[#0090ff] text-white-900  font-bold w-50 border-r-2 text-[18px]" onClick={handlePlaceOrder}>Place order</button>
               <p className="bg-green-600 text-white-900 font-bold w-50 text-center" style={{lineHeight:"35px"}}>Total <span>₹{totalPrice}/-</span></p>
 
           </div>
