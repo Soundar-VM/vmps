@@ -13,13 +13,13 @@ import loginOffcanvas from "../store/loginOffcanvas";
 import cartToggle from "../store/cartToggle";
 import Cookies from "universal-cookie";
 import userLoginStatus from "../store/userLoginStatus";
-
+import { toast } from 'react-toastify';
 
   
 
 
 function Login() {
-    const {loginStatus,setLogin,setLoginStatus}= userLoginStatus();
+    const {loginStatus,setLogin,setLoginStatus,refreshLoginStatus}= userLoginStatus();
     const {loginOffcanvasStatus,loginOffcanvasStatusToggle}=loginOffcanvas();
     const [otp, setOtp] = useState("");
     const [email, setEmail] = useState("");
@@ -47,35 +47,30 @@ function Login() {
           setEmailSet(true);
           setOtpHide(true);
           
-          console.log("OTP success",otp.data.success);
+          // console.log("OTP success",otp.data.success);
           if(otp.data.success){
             setOtpError(otp.data.message);
-            setEmail("");
             setEmailError("");
             setLogin(email);
-            setLoginStatus();
-            console.log(loginStatus);
-            
-            
-
-
             const loginCookie = new Cookies(null, { path: "/" });
-                    const userCookieEmail = email;
-                    console.log(userCookieEmail);
-                
-                    if (loginCookie.get("userCookieEmail")) {
-                      return;
-                    } else {
-                      loginCookie.set("userCookieEmail", userCookieEmail);
-                    }
-
-
+            const userCookieEmail = email;
+            // console.log(userCookieEmail);
+        
+            if (!loginCookie.get("userCookieEmail")) {
+            loginCookie.set("userCookieEmail", userCookieEmail);
+            }
+            setLoginStatus();
+            setEmail("");
+            refreshLoginStatus();
             setVerifyButtonContent(<GiCheckMark />);
+            loginOffcanvasStatusToggle();
+            toast.success("Login Successfull",{position: "bottom-center",autoClose: 2500});
           }
           setOtpError(otp.data.message);
+          
         })
         .catch((error) => {
-          console.log("Error verifying OTP:", error);
+          // console.log("Error verifying OTP:", error);
           setOtpError(error.response.data.message);
         });
     };
@@ -132,13 +127,15 @@ function Login() {
           setEmailSet(true);
           setOtpHide(false);
           setEmailError("");
-          errors.email="";
         } else {
           setEmailSet(false);
           setEmailError(responseData.message);
         }
+        // console.log(emailSet);
+        
       } catch (error) {
-        setEmailError(error.response.data.message);
+        // console.log("Error verifying OTP:", error);
+        setEmailError(error.response?.data?.message || "Something went wrong");
         setVerifyButtonContent("verify");
       }
     }

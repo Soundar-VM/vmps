@@ -18,7 +18,7 @@ import { toast } from 'react-toastify';
 
 
 function SignUp() {
-  const {loginStatus,setLogin,setLoginStatus}= userLoginStatus();
+  const {loginStatus,setLogin,setLoginStatus,refreshLoginStatus}= userLoginStatus();
   const {signUpStatus, signUpStatusToggle } = signUpToggle();
   const {cartStatus,cartStatusToggle}= cartToggle();
   const {loginOffcanvasStatus,loginOffcanvasStatusToggle}= loginOffcanvas();
@@ -135,18 +135,14 @@ function SignUp() {
   
   const onSubmit = async (data) =>{
    
-    
-
     if(emailVerified){
       await axios.post("https://myhitech.digitalmantraaz.com/api/register",data)
       .then(response=>{
        console.log(response);
 
       if(response.data.status=="success"){
-        toast.warn("Success",{position: "bottom-center",autoClose: 1000})
-        setLogin(data.email);
-        setLoginStatus();
-          const loginCookie = new Cookies(null, { path: "/" });
+        toast.success("Registered Successfully",{position: "bottom-center",autoClose: 2500});
+        const loginCookie = new Cookies(null, { path: "/" });
           const userCookieEmail = data.email;
           
           if (loginCookie.get("userCookieEmail")) {
@@ -154,15 +150,16 @@ function SignUp() {
           } else {
             loginCookie.set("userCookieEmail", userCookieEmail);
           }
+        setLogin(data.email);
+        setLoginStatus();
+        refreshLoginStatus();
           reset();
           signUpStatusToggle();
           cartStatusToggle();
-
       }
-
      })
      .catch(error=>{
-      //  console.error(error);
+       console.error(error);
      })
     }else{
       setEmailError("Please Verify your mail");
@@ -233,7 +230,14 @@ function SignUp() {
           {/* {errors.email && <span className="error">Email is manditory</span>} */}
         </div>
         {/* {errors.email && <span className="error">Email is required</span>} */}
-        <span className="text-start !mb-0 text-red-500 font-bold">{emailError}</span>
+        {emailError ? (
+  <span className="text-start !mb-0 text-red-500 font-bold">{emailError}</span>
+) : (
+  errors.email && <span className="error">* Email is mandatory</span>
+)}
+
+        
+        
         <p className="text-center mb-1 text-green-600" style={{ display: isCounting ? "block" : "none" }}>
           OTP has been sent (Resend OTP in {countDownTime.minutes}:
           {countDownTime.seconds < 10

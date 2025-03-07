@@ -20,12 +20,11 @@ function Cart() {
   const { categories, fetchCategories } = categoryStore();
   const { cartStatus, cartStatusToggle } = cartToggle();
   const { products, fetchProducts } = productStore();
-  const { cart, removeSingle, addToCart } = cartStore();
+  const { cart, removeSingle, addToCart,clearCart } = cartStore();
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalPriceDiscount, setTotalPriceDiscount] = useState(0);
   const {loginStatus,loginUserEmail} =userLoginStatus();
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -51,7 +50,13 @@ function Cart() {
 
     const checkout =async()=>{
       await axios.post('https://myhitech.digitalmantraaz.com/api/place-order',{cart,email:loginUserEmail})
-      .then(response =>console.log(response))
+      .then(response =>{
+        console.log(response.data);
+        
+        
+        // if()
+        // clearCart();
+      })
       .catch(error=>console.log(error))
     }
 
