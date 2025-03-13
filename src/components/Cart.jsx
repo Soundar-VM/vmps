@@ -64,7 +64,9 @@ function Cart() {
     console.log(loginStatus,loginUserEmail);
     
     if(loginStatus){
-      checkout();
+      // checkout();
+      signUpStatusToggle()
+      cartStatusToggle();
     }else{
       cartStatusToggle();
       loginOffcanvasStatusToggle();

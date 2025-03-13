@@ -177,7 +177,7 @@ function SignUp() {
         <button onClick={signUpStatusToggle}>
           <GrLinkPrevious />
         </button>
-        <h1 className="text-[20px] mb-5">Register</h1>
+        <h1 className="text-[20px] mb-5">Shipping Address</h1>
       </div>
 
       {/* <h1 className="text-[22px] mb-5">Contact Details</h1> */}
@@ -204,78 +204,6 @@ function SignUp() {
         </div>
         {errors.phone && <span className="error">* Phone Number is manditory</span>}
 
-        {/* <label>Email ID</label> */}
-        <div>
-          <div className="flex shadow-sm">
-            <input
-              type="text"
-              placeholder="Email ID"
-              disabled={emailSet}
-              {...register("email",{ required: true })}
-              className="block w-full !border-e-0 !rounded-tr-none !rounded-br-none"
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-            />
-            <button
-              type="button"
-              disabled={emailSet}
-              className={`px-2 bg-green-600 text-white disabled:opacity-50 h-[36px]`}
-              onClick={sendVerifyCode}
-            >
-
-              {verifyButtonContent}
-              {/* {otpError?<GiCheckMark />:"Verify"}
-              {loading && <Spinner loading={loading} size="3" />} */}
-            </button>
-          </div>
-          {/* {errors.email && <span className="error">Email is manditory</span>} */}
-        </div>
-        {/* {errors.email && <span className="error">Email is required</span>} */}
-        {emailError ? (
-  <span className="text-start !mb-0 text-red-500 font-bold">{emailError}</span>
-) : (
-  errors.email && <span className="error">* Email is mandatory</span>
-)}
-
-        
-        
-        <p className="text-center mb-1 text-green-600" style={{ display: isCounting ? "block" : "none" }}>
-          OTP has been sent (Resend OTP in {countDownTime.minutes}:
-          {countDownTime.seconds < 10
-            ? `0${countDownTime.seconds}`
-            : countDownTime.seconds}
-          )
-        </p>
-        {otpHide ? (
-          ""
-        ) : (
-          <div className="mt-0">
-            <OtpInput
-              value={otp}
-              onChange={setOtp}
-              numInputs={6}
-              containerStyle={{ justifyContent: "center" }}
-              renderSeparator={<span className="error">&nbsp;&nbsp;</span>}
-              renderInput={(props) => (
-                <input
-                  {...props}
-                  style={{ width: "2rem", textAlign: "center" }}
-                  type="number"
-                />
-              )}
-            />
-            <p className="text-center text-green-600 mb-2 text-[15px]">
-              {otpSent ? "" : `Enter OTP (One Time Password)`}
-            </p>
-          </div>
-        )}
-        <p className="text-center text-green-600 text-[15px]">{otpError}</p>
-        {/* <hr className="my-5"/> */}
-      {/* <h1 className="text-[22px] mb-5">Contact Details</h1> */}
-
-      {/* <label htmlFor="address1" className="pb-2 block">
-        Address
-      </label> */}
       <textarea id="address" placeholder="Delivery Address" {...register("address", { required: "Address is Manditory" })}></textarea>
       {errors.address && <span className="error">Address is required</span>}
       <div className="grid grid-cols-2 gap-4">
@@ -303,10 +231,9 @@ function SignUp() {
         }}
       >
        
-        <button className="bg-green-600 px-3 py-2 green" style={{borderRadius:"none"}} type="submit">Register</button>
+        <button className="bg-green-600 px-3 py-2 green" style={{borderRadius:"none"}} type="submit">Confirm Order</button>
       </div>
       </form>
-        <p className="text-center mt-4 text-gray-500" onClick={()=>{loginOffcanvasStatusToggle();signUpStatusToggle()}}>Already have account? / <span className="text-green-500">Login Here</span></p>
     </div>
   );
 }
