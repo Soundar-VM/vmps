@@ -32,98 +32,11 @@ function SignUp() {
   const [otpHide, setOtpHide] = useState(true);
   const [otpSent, setOtpSent] = useState(false);
   
-  const [countDownTime, setCountDownTime] = useState({
-    minutes: 0,
-    seconds: 0,
-  });
-  const [isCounting, setIsCounting] = useState(false);
 
-  const otpResponse = async () => {
-    await axios
-      .post("https://myhitech.digitalmantraaz.com/api/verfiy-otp", {
-        email,
-        otp,
-      })
-      .then((otp) => {
-        console.log(otp);
-        setEmailSet(true);
-        setOtpHide(true)
-        
-        if(otp.status==200){
-          setEmailVerified(true);
-          setVerifyButtonContent(<GiCheckMark />);
-        }
-        setOtpError(otp.data.message);
-      })
-      .catch((error) => {
-        setOtpError(error.response.data.message);
-      });
-  };
 
-  useEffect(() => {
-    if (otp.length == 6) {
-      setOtpSent(true);
-      setOtpError("please wait...");
-      otpResponse();
-    } else {
-      setOtpError("");
-      setOtpSent(false);
-    }
-  }, [otp]);
 
-  useEffect(() => {
-    console.log(loginStatus);
-    
-    if (!isCounting) return;
 
-    const interval = setInterval(() => {
-      setCountDownTime((prevTime) => {
-        if (prevTime.minutes === 0 && prevTime.seconds === 0) {
-          clearInterval(interval);
-          setIsCounting(false);
-          setEmailSet(false);
-          setVerifyButtonContent("Verify")
-          return { minutes: 0, seconds: 0 };
-        }
-
-        const newSeconds = prevTime.seconds === 0 ? 59 : prevTime.seconds - 1;
-        const newMinutes = prevTime.seconds === 0 ? prevTime.minutes - 1 : prevTime.minutes;
-
-        return { minutes: newMinutes, seconds: newSeconds };
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isCounting]);
-
-  async function sendVerifyCode() {
-    setVerifyButtonContent(<Spinner size="3" />)
-    setOtp("");
-    setOtpSent("");
-    try {
-      const response = await axios.post(
-        "https://myhitech.digitalmantraaz.com/api/verfiy-mail",
-        { email }
-      );
-      const responseData = response.data;
-
-      if (responseData.success) {
-        setCountDownTime({ minutes: 0, seconds: 10 });
-        setIsCounting(true);
-        setEmailSet(true);
-        setOtpHide(false);
-        setEmailError("");
-        errors.email="";
-      } else {
-        setEmailSet(false);
-        setEmailError(responseData.message);
-      }
-    } catch (error) {
-      setEmailError(error.response.data.message);
-      setVerifyButtonContent("verify");
-    }
-  }
-
+  
   const {
     register,
     handleSubmit,
@@ -134,43 +47,43 @@ function SignUp() {
 
   
   const onSubmit = async (data) =>{
-   
-    if(emailVerified){
-      await axios.post("https://myhitech.digitalmantraaz.com/api/register",data)
+    // if(emailVerified){
+      
+      await axios.post("https://myhitech.digitalmantraaz.com/api/place-order",{cart,email:loginUserEmail,data})
       .then(response=>{
        console.log(response);
 
-      if(response.data.status=="success"){
-        toast.success("Registered Successfully",{position: "bottom-center",autoClose: 2500});
-        const loginCookie = new Cookies(null, { path: "/" });
-          const userCookieEmail = data.email;
+      // if(response.data.status=="success"){
+      //   toast.success("Registered Successfully",{position: "bottom-center",autoClose: 2500});
+      //   const loginCookie = new Cookies(null, { path: "/" });
+      //     const userCookieEmail = data.email;
           
-          if (loginCookie.get("userCookieEmail")) {
-            return;
-          } else {
-            loginCookie.set("userCookieEmail", userCookieEmail);
-          }
-        setLogin(data.email);
-        setLoginStatus();
-        refreshLoginStatus();
-          reset();
-          signUpStatusToggle();
-          cartStatusToggle();
-      }
+      //     if (loginCookie.get("userCookieEmail")) {
+      //       return;
+      //     } else {
+      //       loginCookie.set("userCookieEmail", userCookieEmail);
+      //     }
+      //   setLogin(data.email);
+      //   setLoginStatus();
+      //   refreshLoginStatus();
+      //     reset();
+      //     signUpStatusToggle();
+      //     cartStatusToggle();
+      // }
 
      })
      .catch(error=>{
        console.error(error);
      })
-    }else{
-      setEmailError("Please Verify your mail");
-    }
+    // }else{
+    //   setEmailError("Please Verify your mail");
+    // }
   }
 
 
   return (
     <div
-      className="p-5 fixed top-16 right-0 h-full bg-black z-9"
+      className="p-5 fixed top-16 w-100 right-0 h-full bg-black z-9"
       style={{ display: signUpStatus ? "block" : "none" }}
     >
       <div className="flex justify-between mb-2">

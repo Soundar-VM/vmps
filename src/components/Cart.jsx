@@ -7,6 +7,7 @@ import { Grid, Card, Box, Flex, TextField ,Spinner,Button, Text } from "@radix-u
 import { GrCart } from "react-icons/gr";
 import { GrLinkPrevious } from "react-icons/gr";
 import signUpToggle from "../store/signUpToggle";
+import profileToggle from "../store/profileToggle";
 import loginOffcanvas from "../store/loginOffcanvas";
 import cartToggle from "../store/cartToggle";
 import Cookies from "universal-cookie";
@@ -19,6 +20,7 @@ function Cart() {
   const {loginOffcanvasStatus,loginOffcanvasStatusToggle}=loginOffcanvas();
   const { categories, fetchCategories } = categoryStore();
   const { cartStatus, cartStatusToggle } = cartToggle();
+  const {profileStatus,toggleProfileStatus}= profileToggle();
   const { products, fetchProducts } = productStore();
   const { cart, removeSingle, addToCart,clearCart } = cartStore();
   const [cartItems, setCartItems] = useState([]);
@@ -61,13 +63,18 @@ function Cart() {
     }
 
   function handlePlaceOrder(){
-    console.log(loginStatus,loginUserEmail);
+    // console.log(loginStatus,loginUserEmail);
     
     if(loginStatus){
       // checkout();
-      signUpStatusToggle()
+      if(profileStatus){
+        toggleProfileStatus(false);
+      }
+      signUpStatusToggle();
       cartStatusToggle();
-    }else{
+
+    }
+    else{
       cartStatusToggle();
       loginOffcanvasStatusToggle();
     }

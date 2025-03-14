@@ -143,7 +143,7 @@ function Login() {
   return (
     <div>
          <div
-      className="p-5 fixed top-16 right-0 h-full bg-black z-9"
+      className="p-5 fixed top-16 w-100 right-0 h-full bg-black z-9"
       style={{ display: loginOffcanvasStatus ? "block" : "none" }}
     >
       <div className="flex justify-between mb-2">
@@ -220,7 +220,7 @@ function Login() {
        
         {/* <button className="bg-green-600 px-3 py-2 green" style={{borderRadius:"none"}} type="submit">Login</button> */}
       </div>
-        <p className="text-center mt-4 text-gray-500" onClick={()=>{signUpStatusToggle();loginOffcanvasStatusToggle()}}>Dont have account? / <span className="text-green-500">Register</span></p>
+        {/* <p className="text-center mt-4 text-gray-500" onClick={()=>{signUpStatusToggle();loginOffcanvasStatusToggle()}}>Dont have account? / <span className="text-green-500">Register</span></p> */}
     </div>
     </div>
   )

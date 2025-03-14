@@ -2,7 +2,8 @@ import { create } from "zustand";
 
 const profileToggle = create((set) => ({
   profileStatus: false, 
-  toggleProfileStatus: () => set((state) => ({ profileStatus: !state.profileStatus })),
+  toggleProfileStatus: (status) => set({ profileStatus: status }),
+
 }));
 
 export default profileToggle;
